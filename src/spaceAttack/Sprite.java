@@ -169,35 +169,85 @@ public class Sprite {
      */
     public boolean isCollides(Sprite s2) {
 
-        boolean collidesX =false , collidesY = false;
+//        boolean collidesX =false , collidesY = false;
+//
+//        //calculo de la colision en el eje horizontal
+//        if(this.getPosX()<s2.getPosX()){
+//            int rightBorder = this.getPosX()+this.getAncho();
+//            if(rightBorder>=s2.getPosX()){
+//                collidesX=true;
+//            }
+//        }else{
+//            int rightBorder = s2.getPosX()+s2.getAncho();
+//            if(rightBorder>= this.getPosX()){
+//                collidesX=true;
+//            }
+//        }
+//
+//        //calculo de la colision en el eje vertical
+//        if(this.getPosY()<s2.getPosY()){
+//            int bottomBorder = this.getPosY()+this.getAlto();
+//            if(bottomBorder>= s2.getPosY()){
+//                collidesY=true;
+//            }
+//        }else{
+//            int bottomBorder = s2.getPosY()+s2.getAlto();
+//            if(bottomBorder>=this.getPosY()){
+//                collidesY=true;
+//            }
+//        }
+//
+//        return collidesX && collidesY;
 
-        //calculo de la colision en el eje horizontal
-        if(this.getPosX()<s2.getPosX()){
-            int rightBorder = this.getPosX()+this.getAncho();
-            if(rightBorder>=s2.getPosX()){
-                collidesX=true;
-            }
-        }else{
-            int rightBorder = s2.getPosX()+s2.getAncho();
-            if(rightBorder>= this.getPosX()){
-                collidesX=true;
-            }
+
+        //valor entero para representar la distancia
+        double d;
+        int radioS1=this.getAncho()/2;
+        int radioS2=s2.getAncho()/2;
+
+        //valor entero para representar la suma de los radios
+        int plusRadios = radioS1 + radioS2;
+        boolean collides;
+
+        //vector de 2 dimensiones con el valor x e y del centro del sprite original.
+        int[] center1 = {this.getPosX() - radioS1, this.getPosY() - radioS1};
+        //vector de 2 dimensiones con el valor x e y del centro del sprite s2.
+        int[] center2 = {s2.getPosX() - radioS2, s2.getPosY() - radioS2};
+
+        if (checkCenterCloseness(center1, center2) == 0) {
+            d = Math.sqrt(Math.pow(center2[0]-center1[0], 2) + Math.pow(center2[1]-center1[1], 2));
+        } else {
+            d = Math.sqrt(Math.pow(center1[0]-center2[0], 2) + Math.pow(center1[1]-center2[1], 2));
         }
 
-        //calculo de la colision en el eje vertical
-        if(this.getPosY()<s2.getPosY()){
-            int bottomBorder = this.getPosY()+this.getAlto();
-            if(bottomBorder>= s2.getPosY()){
-                collidesY=true;
-            }
-        }else{
-            int bottomBorder = s2.getPosY()+s2.getAlto();
-            if(bottomBorder>=this.getPosY()){
-                collidesY=true;
-            }
+        if (d <= plusRadios) {
+            collides = true;
+        } else {
+            collides = false;
         }
 
-        return collidesX && collidesY;
+
+        return collides;
+    }
+
+    /**
+     * Metodo encargado de comprobar cual de los puntos es más cercano al eje de coordenadas 0,0
+     *
+     * @param center1
+     * @param center2
+     * @return 0 si el centro 1 es el mas cercano, 1 en caso contrario.
+     */
+    private int checkCenterCloseness(int[] center1, int[] center2) {
+        double d1, d2;
+        int result;
+        d1 = Math.sqrt(Math.pow(center1[0], 2) + Math.pow(center1[1], 2));
+        d2 = Math.sqrt(Math.pow(center2[0], 2) + Math.pow(center2[1], 2));
+        if (d1 <= d2) {
+            result = 0;
+        } else {
+            result = 1;
+        }
+        return result;
     }
 
     /**

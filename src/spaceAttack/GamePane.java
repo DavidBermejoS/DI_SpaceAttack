@@ -3,14 +3,11 @@ package spaceAttack;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -34,7 +31,7 @@ public class GamePane extends JPanel implements Runnable {
         this.numSprites = 0;
         this.setLayout(new GridBagLayout());
         sprites = new ArrayList<>();
-        addListeners();
+        addAsteroids();
         addCounter();
         new Thread(this).start();
 
@@ -110,24 +107,21 @@ public class GamePane extends JPanel implements Runnable {
      * Metodo encargado de añadir un listener al panel de juego para
      * el control del mouse.
      */
-    private void addListeners() {
-        this.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                Random rd = new Random();
-                Sprite sprite = new Sprite();
-                sprite.setPosX(e.getX());
-                sprite.setPosY(e.getY());
-                sprite.setAncho(30);
-                sprite.setAlto(30);
-                sprite.setVx(rd.nextInt(6)+1);
-                sprite.setVy(rd.nextInt(6)+1);
-                sprite.setFileImage(new File(asteroidImage));
-                sprite.refreshBuffer();
-                sprite.setIdSprite(numSprites);
-                sprites.add(sprite);
-            }
-        });
+    private void addAsteroids() {
+        for (int i = 0; i < 6; i++) {
+            Random rd = new Random();
+            Sprite sprite = new Sprite();
+            sprite.setPosX(0);
+            sprite.setPosY(0);
+            sprite.setAncho(40);
+            sprite.setAlto(40);
+            sprite.setVx(rd.nextInt(6)+1);
+            sprite.setVy(rd.nextInt(6)+1);
+            sprite.setFileImage(new File(asteroidImage));
+            sprite.refreshBuffer();
+            sprite.setIdSprite(numSprites);
+            sprites.add(sprite);
+        }
         numSprites++;
     }
 
