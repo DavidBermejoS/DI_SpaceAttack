@@ -1,9 +1,16 @@
 package spaceAttack;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -18,13 +25,17 @@ public class GamePane extends JPanel implements Runnable {
     CollisionCounter counter;
     int numSprites;
 
+    //imagen de fondo
+    Image backgroundImage;
+
     public GamePane() {
-        this.numSprites=0;
+        this.numSprites = 0;
         this.setLayout(new GridBagLayout());
         sprites = new ArrayList<>();
         addListeners();
         addCounter();
         new Thread(this).start();
+
     }
 
 
@@ -33,7 +44,6 @@ public class GamePane extends JPanel implements Runnable {
         fillBackground(g);
         drawSprite(g);
     }
-
 
 
     /**
@@ -57,28 +67,51 @@ public class GamePane extends JPanel implements Runnable {
     }
 
 
-
     /**
      * Metodo encargado de pintar el fondo del panel de juego
      *
      * @param g
      */
     private void fillBackground(Graphics g) {
-        g.setColor(Color.WHITE);
-        g.fillRect(0, 0, this.getWidth(), this.getHeight());
+        File bckg = new File("resources/images/background.jpg");
+        backgroundImage = obtainImage(bckg);
+        backgroundImage = scaleImage(backgroundImage);
+        g.drawImage(backgroundImage, 0, 0, null);
     }
 
+    /**
+     * Metodo para cargar en memoria las imagenes que necesitemos
+     *
+     * @param file
+     */
+    private BufferedImage obtainImage(File file) {
+        BufferedImage image = null;
+        try {
+            image = ImageIO.read(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return image;
+    }
+
+    /**
+     * Metodo para reescalar imagenes
+     *
+     * @param image : imagen que se redimensionara.
+     */
+    private Image scaleImage(Image image) {
+        return image.getScaledInstance(this.getWidth(), this.getHeight(), 4);
+    }
 
 
     /**
      * Metodo encargado de añadir un listener al panel de juego para
      * el control del mouse.
      */
-    private void addListeners(){
+    private void addListeners() {
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-//                super.mouseClicked(e);
                 Random rd = new Random();
                 Sprite sprite = new Sprite();
                 sprite.setPosX(e.getX());
@@ -102,12 +135,12 @@ public class GamePane extends JPanel implements Runnable {
     private void addCounter() {
         this.counter = new CollisionCounter();
         GridBagConstraints settings = new GridBagConstraints();
-        settings.weightx=5;
-        settings.weighty=5;
-        settings.ipadx=30;
-        settings.ipady=10;
-        settings.anchor=GridBagConstraints.SOUTHEAST;
-        this.add(counter,settings);
+        settings.weightx = 5;
+        settings.weighty = 5;
+        settings.ipadx = 30;
+        settings.ipady = 10;
+        settings.anchor = GridBagConstraints.SOUTHEAST;
+        this.add(counter, settings);
     }
 
 
@@ -137,10 +170,10 @@ public class GamePane extends JPanel implements Runnable {
      * Si estos colisionan entre si, se marcara su atributo destroyed a true.
      */
     private void checkSpritesCollision() {
-        for (Sprite s1:sprites) {
-            for (Sprite s2: sprites) {
-                if(s1!=s2){
-                    if(s1.isCollides(s2)){
+        for (Sprite s1 : sprites) {
+            for (Sprite s2 : sprites) {
+                if (s1 != s2) {
+                    if (s1.isCollides(s2)) {
                         s1.setDestroyed(true);
                         s2.setDestroyed(true);
                     }
@@ -154,20 +187,21 @@ public class GamePane extends JPanel implements Runnable {
      * Posteriormente la lista original se actualizará con la información de la copia.
      */
     private void destroyCollisionedSprites() {
-        ArrayList<Sprite> spritesAux = (ArrayList<Sprite>)sprites.clone();
-        for (Sprite s: sprites) {
-            if(s.isDestroyed()){
+        ArrayList<Sprite> spritesAux = (ArrayList<Sprite>) sprites.clone();
+        for (Sprite s : sprites) {
+            if (s.isDestroyed()) {
                 spritesAux.remove(s);
                 this.counter.plusCollision();
             }
         }
-        sprites = (ArrayList<Sprite>)spritesAux.clone();
+        sprites = (ArrayList<Sprite>) spritesAux.clone();
     }
 
 
     @Override
     public void run() {
         while (true) {
+
             try {
                 sleep(25);
                 for (Sprite s : sprites) {
@@ -179,6 +213,7 @@ public class GamePane extends JPanel implements Runnable {
                 destroyCollisionedSprites();
                 this.counter.refreshCounter();
                 repaint();
+
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
