@@ -1,15 +1,18 @@
 package spaceAttack;
 
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * @author David Bermejo Simon
  **/
 public class Sprite {
     private BufferedImage buffer;
-    private Color color = Color.BLACK;
+    private Color color;
 
     //variables de dimension
     private int ancho;
@@ -26,6 +29,8 @@ public class Sprite {
 
     private boolean destroyed;
 
+    private File fileImage;
+
     public Sprite() {
         this.destroyed=false;
 
@@ -39,16 +44,34 @@ public class Sprite {
         this.posX = posX;
         this.posY = posY;
         this.destroyed=false;
-        refreshBuffer();
+//        refreshBuffer();
     }
 
+    public Sprite(BufferedImage buffer, Color color, int ancho, int alto, int posX, int posY, File fileImage) {
+        this.buffer = buffer;
+        this.color = color;
+        this.ancho = ancho;
+        this.alto = alto;
+        this.posX = posX;
+        this.posY = posY;
+        this.fileImage = fileImage;
+
+
+    }
 
     public void refreshBuffer() {
         buffer = new BufferedImage(ancho, alto, BufferedImage.TYPE_INT_ARGB);
         Graphics g = buffer.getGraphics();
-        g.setColor(color);
-        g.fillRect(0, 0, ancho, alto);
-        g.dispose();
+        try{
+            BufferedImage imagenSprite = ImageIO.read(fileImage);
+            g.drawImage(imagenSprite.getScaledInstance(ancho, alto, Image.SCALE_SMOOTH),0,0,null);
+            g.dispose();
+        }catch(IOException ex){
+            System.out.println(ex.getMessage());
+            g.setColor(color);
+            g.fillRect(0, 0, ancho, alto);
+            g.dispose();
+        }
     }
 
     public BufferedImage getBuffer() {
@@ -131,8 +154,13 @@ public class Sprite {
         this.idSprite = idSprite;
     }
 
+    public File getFileImage() {
+        return fileImage;
+    }
 
-
+    public void setFileImage(File fileImage) {
+        this.fileImage = fileImage;
+    }
 
     /**
      * Metodo encargado de determinar si un sprite colisiona con otro
@@ -170,5 +198,22 @@ public class Sprite {
         }
 
         return collidesX && collidesY;
+    }
+
+    /**
+     * Metodo encargado de cambiar la velocidad en el vector contrario.
+     */
+    public void changeVelocity(){
+        if(this.getVx() < 0){
+            this.setVx(Math.abs(this.getVx()));
+        }else{
+            this.setVx(Math.abs(this.getVx())*-1);
+        }
+
+        if(this.getVx()>0){
+            this.setVy(Math.abs(this.getVy()));
+        }else{
+            this.setVy(Math.abs(this.getVy())*-1);
+        }
     }
 }

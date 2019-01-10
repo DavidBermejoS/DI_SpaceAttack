@@ -28,6 +28,8 @@ public class GamePane extends JPanel implements Runnable {
     //imagen de fondo
     Image backgroundImage;
 
+    String asteroidImage = "resources/images/asteroide.png";
+
     public GamePane() {
         this.numSprites = 0;
         this.setLayout(new GridBagLayout());
@@ -118,8 +120,9 @@ public class GamePane extends JPanel implements Runnable {
                 sprite.setPosY(e.getY());
                 sprite.setAncho(30);
                 sprite.setAlto(30);
-                sprite.setVx(rd.nextInt(16));
-                sprite.setVy(rd.nextInt(16));
+                sprite.setVx(rd.nextInt(6)+1);
+                sprite.setVy(rd.nextInt(6)+1);
+                sprite.setFileImage(new File(asteroidImage));
                 sprite.refreshBuffer();
                 sprite.setIdSprite(numSprites);
                 sprites.add(sprite);
@@ -152,15 +155,15 @@ public class GamePane extends JPanel implements Runnable {
      */
     private void checkCollision(Sprite sprite) {
         if (sprite.getPosX() <= 0) {
-            sprite.setVx(sprite.getVx() * -1);
+            sprite.setVx(Math.abs(sprite.getVx()));
         } else if (sprite.getPosX() >= this.getWidth() - sprite.getAncho()) {
-            sprite.setVx(sprite.getVx() * -1);
+            sprite.setVx(Math.abs(sprite.getVx()) * -1);
         }
 
         if (sprite.getPosY() <= 0) {
-            sprite.setVy(sprite.getVy() * -1);
+            sprite.setVy(Math.abs(sprite.getVy()));
         } else if (sprite.getPosY() >= this.getHeight() - sprite.getAlto()) {
-            sprite.setVy(sprite.getVy() * -1);
+            sprite.setVy(Math.abs(sprite.getVy()) * -1);
         }
     }
 
@@ -174,8 +177,9 @@ public class GamePane extends JPanel implements Runnable {
             for (Sprite s2 : sprites) {
                 if (s1 != s2) {
                     if (s1.isCollides(s2)) {
-                        s1.setDestroyed(true);
-                        s2.setDestroyed(true);
+                        s1.changeVelocity();
+                        s2.changeVelocity();
+
                     }
                 }
             }
@@ -186,16 +190,16 @@ public class GamePane extends JPanel implements Runnable {
      * Metodo encargado de crear una copia de la lista de sprites. En esta copia se eliminarán los sprites colisionados.
      * Posteriormente la lista original se actualizará con la información de la copia.
      */
-    private void destroyCollisionedSprites() {
-        ArrayList<Sprite> spritesAux = (ArrayList<Sprite>) sprites.clone();
-        for (Sprite s : sprites) {
-            if (s.isDestroyed()) {
-                spritesAux.remove(s);
-                this.counter.plusCollision();
-            }
-        }
-        sprites = (ArrayList<Sprite>) spritesAux.clone();
-    }
+//    private void destroyCollisionedSprites() {
+//        ArrayList<Sprite> spritesAux = (ArrayList<Sprite>) sprites.clone();
+//        for (Sprite s : sprites) {
+//            if (s.isDestroyed()) {
+//                spritesAux.remove(s);
+//                this.counter.plusCollision();
+//            }
+//        }
+//        sprites = (ArrayList<Sprite>) spritesAux.clone();
+//    }
 
 
     @Override
@@ -210,7 +214,6 @@ public class GamePane extends JPanel implements Runnable {
                     checkCollision(s);
                     checkSpritesCollision();
                 }
-                destroyCollisionedSprites();
                 this.counter.refreshCounter();
                 repaint();
 
