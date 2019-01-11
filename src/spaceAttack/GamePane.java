@@ -3,11 +3,14 @@ package spaceAttack;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -20,7 +23,8 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener {
 
     ArrayList<Sprite> sprites;
     Sprite spaceShip;
-    CollisionCounter counter;
+    Timer timer;
+
     int numSprites;
 
     //imagen de fondo
@@ -30,82 +34,22 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener {
     String asteroidImage = "resources/images/asteroide.png";
     String spaceShipImage = "resources/images/nave.png";
 
+
+    double timeCount;
+
     public GamePane() {
         this.numSprites = 0;
-        this.setLayout(new GridBagLayout());
         sprites = new ArrayList<>();
+        //se anaden los asteroides, la nave y el tiempo
         addAsteroids();
         addSpaceShip();
-        addCounter();
+        addTimer();
+        //se inicializa el tiempo
+        this.timer.start();
+        //comienza el ciclo de refresco del panel de juego con sus listeners
         new Thread(this).start();
         this.addMouseMotionListener(this);
 
-    }
-
-
-    @Override
-    protected void paintComponent(Graphics g) {
-        fillBackground(g);
-        drawSprite(g);
-    }
-
-
-    /**
-     * Metodo encargado de pintar los sprites contenidos en la lista sprites.
-     *
-     * @param g
-     * @see Sprite
-     */
-    private void drawSprite(Graphics g) {
-        for (Sprite s : sprites) {
-            g.drawImage(
-                    s.getBuffer(),
-                    s.getPosX(),
-                    s.getPosY(),
-                    s.getAncho(),
-                    s.getAlto(),
-                    s.getColor(),
-                    null
-            );
-        }
-
-    }
-
-
-    /**
-     * Metodo encargado de pintar el fondo del panel de juego
-     *
-     * @param g
-     */
-    private void fillBackground(Graphics g) {
-        File bckg = new File("resources/images/background.jpg");
-        backgroundImage = obtainImage(bckg);
-        backgroundImage = scaleImage(backgroundImage);
-        g.drawImage(backgroundImage, 0, 0, null);
-    }
-
-    /**
-     * Metodo para cargar en memoria las imagenes que necesitemos
-     *
-     * @param file
-     */
-    private BufferedImage obtainImage(File file) {
-        BufferedImage image = null;
-        try {
-            image = ImageIO.read(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return image;
-    }
-
-    /**
-     * Metodo para reescalar imagenes
-     *
-     * @param image : imagen que se redimensionara.
-     */
-    private Image scaleImage(Image image) {
-        return image.getScaledInstance(this.getWidth(), this.getHeight(), 4);
     }
 
 
@@ -149,16 +93,96 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener {
     /**
      * Metodo encargado de anadir un contador de colisiones de sprites al panel de juego
      */
-    private void addCounter() {
-        this.counter = new CollisionCounter();
-        GridBagConstraints settings = new GridBagConstraints();
-        settings.weightx = 5;
-        settings.weighty = 5;
-        settings.ipadx = 30;
-        settings.ipady = 10;
-        settings.anchor = GridBagConstraints.SOUTHEAST;
-        this.add(counter, settings);
+    private void addTimer() {
+        this.timer = new Timer(9, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                timeCount+=0.01;
+            }
+        });
     }
+
+
+    /**
+     * Metodo para repintar los componentes en la pantalla
+     * @param g
+     */
+    @Override
+    protected void paintComponent(Graphics g) {
+        drawBackground(g);
+        drawSprite(g);
+        drawTimer(g);
+    }
+
+
+    /**
+     * Metodo encargado de pintar los sprites contenidos en la lista sprites.
+     *
+     * @param g
+     * @see Sprite
+     */
+    private void drawSprite(Graphics g) {
+        for (Sprite s : sprites) {
+            g.drawImage(
+                    s.getBuffer(),
+                    s.getPosX(),
+                    s.getPosY(),
+                    s.getAncho(),
+                    s.getAlto(),
+                    s.getColor(),
+                    null
+            );
+        }
+    }
+
+    /**
+     * Dibuja el contador de tiempo en el panel de juego
+     * @param g
+     */
+    private void drawTimer(Graphics g) {
+        g.setColor(Color.RED);
+        g.drawString(String.valueOf(new DecimalFormat("#.##").format(timeCount)),
+                getWidth()-30,
+                this.getHeight()-20);
+    }
+
+
+    /**
+     * Metodo encargado de pintar el fondo del panel de juego
+     *
+     * @param g
+     */
+    private void drawBackground(Graphics g) {
+        File bckg = new File("resources/images/background.jpg");
+        backgroundImage = obtainImage(bckg);
+        backgroundImage = scaleImage(backgroundImage);
+        g.drawImage(backgroundImage, 0, 0, null);
+    }
+
+    /**
+     * Metodo para cargar en memoria las imagenes que necesitemos
+     *
+     * @param file
+     */
+    private BufferedImage obtainImage(File file) {
+        BufferedImage image = null;
+        try {
+            image = ImageIO.read(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return image;
+    }
+
+    /**
+     * Metodo para reescalar imagenes
+     *
+     * @param image : imagen que se redimensionara.
+     */
+    private Image scaleImage(Image image) {
+        return image.getScaledInstance(this.getWidth(), this.getHeight(), 4);
+    }
+
 
 
     /**
@@ -192,7 +216,7 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener {
 //                Sprite s1 = sprites.get(i);
 //                Sprite s2 = sprites.get(j);
 //                if (s1 != s2) {
-//                    if (s1.isCollides(s2)) {
+//                    if (s1.circleCollider(s2)) {
 //                        s1.changeVelocity();
 //                        s2.changeVelocity();
 //                    }
@@ -211,11 +235,12 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener {
 //        for (Sprite s : sprites) {
 //            if (s.isDestroyed()) {
 //                spritesAux.remove(s);
-//                this.counter.plusCollision();
+//                this.timer.plusCollision();
 //            }
 //        }
 //        sprites = (ArrayList<Sprite>) spritesAux.clone();
 //    }
+
     @Override
     public void run() {
         while (true) {
@@ -228,7 +253,6 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener {
                     checkCollision(s);
 //                    checkSpritesCollision();
                 }
-                this.counter.refreshCounter();
                 repaint();
 
             } catch (InterruptedException e) {
@@ -239,7 +263,7 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener {
 
     @Override
     public void mouseDragged(MouseEvent e) {
-
+        //no hace nada
     }
 
     @Override

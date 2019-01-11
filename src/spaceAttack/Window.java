@@ -10,12 +10,10 @@ import java.awt.image.BufferedImage;
 public class Window {
     JFrame frame;
     GamePane gamePane;
-    Sprite sprite;
-
 
     public Window() {
         frame = new JFrame("Actividad 1 UT9");
-        frame.setBounds(600, 400, 400, 400);
+        frame.setBounds(800, 800, 400, 400);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
