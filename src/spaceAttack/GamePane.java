@@ -3,14 +3,11 @@ package spaceAttack;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -19,24 +16,29 @@ import static java.lang.Thread.sleep;
 /**
  * @author David Bermejo Simon
  **/
-public class GamePane extends JPanel implements Runnable {
+public class GamePane extends JPanel implements Runnable, MouseMotionListener {
 
     ArrayList<Sprite> sprites;
+    Sprite spaceShip;
     CollisionCounter counter;
     int numSprites;
 
     //imagen de fondo
     Image backgroundImage;
 
+    //rutas relativas a los recursos de imagen
     String asteroidImage = "resources/images/asteroide.png";
+    String spaceShipImage = "resources/images/nave.png";
 
     public GamePane() {
         this.numSprites = 0;
         this.setLayout(new GridBagLayout());
         sprites = new ArrayList<>();
-        addListeners();
+        addAsteroids();
+        addSpaceShip();
         addCounter();
         new Thread(this).start();
+        this.addMouseMotionListener(this);
 
     }
 
@@ -66,6 +68,7 @@ public class GamePane extends JPanel implements Runnable {
                     null
             );
         }
+
     }
 
 
@@ -107,28 +110,39 @@ public class GamePane extends JPanel implements Runnable {
 
 
     /**
-     * Metodo encargado de añadir un listener al panel de juego para
-     * el control del mouse.
+     * Metodo encargado de anadir los asteroides al inicio de la partida
      */
-    private void addListeners() {
-        this.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                Random rd = new Random();
-                Sprite sprite = new Sprite();
-                sprite.setPosX(e.getX());
-                sprite.setPosY(e.getY());
-                sprite.setAncho(30);
-                sprite.setAlto(30);
-                sprite.setVx(rd.nextInt(6)+1);
-                sprite.setVy(rd.nextInt(6)+1);
-                sprite.setFileImage(new File(asteroidImage));
-                sprite.refreshBuffer();
-                sprite.setIdSprite(numSprites);
-                sprites.add(sprite);
-            }
-        });
+    private void addAsteroids() {
+        for (int i = 0; i < 6; i++) {
+            Random rd = new Random();
+            Sprite sprite = new Sprite();
+            sprite.setPosX(0);
+            sprite.setPosY(0);
+            sprite.setAncho(40);
+            sprite.setAlto(40);
+            sprite.setVx(rd.nextInt(6) + 1);
+            sprite.setVy(rd.nextInt(6) + 1);
+            sprite.setFileImage(new File(asteroidImage));
+            sprite.refreshBuffer();
+            sprite.setIdSprite(numSprites);
+            sprites.add(sprite);
+        }
         numSprites++;
+    }
+
+    /**
+     * Metodo encargado de anadir la nave al inicio de la partida
+     */
+    private void addSpaceShip() {
+        spaceShip = new Sprite();
+        spaceShip.setAncho(40);
+        spaceShip.setAlto(40);
+        spaceShip.setPosX(this.getWidth());
+        spaceShip.setPosY(this.getHeight());
+        spaceShip.setFileImage(new File(spaceShipImage));
+        spaceShip.refreshBuffer();
+        spaceShip.setIdSprite(numSprites);
+        sprites.add(spaceShip);
     }
 
 
@@ -172,19 +186,21 @@ public class GamePane extends JPanel implements Runnable {
      * Metodo encargado de comprobar si dos sprites colisionan entre si.
      * Si estos colisionan entre si, se marcara su atributo destroyed a true.
      */
-    private void checkSpritesCollision() {
-        for (Sprite s1 : sprites) {
-            for (Sprite s2 : sprites) {
-                if (s1 != s2) {
-                    if (s1.isCollides(s2)) {
-                        s1.changeVelocity();
-                        s2.changeVelocity();
+//    private void checkSpritesCollision() {
+//        for (int i = 0; i < sprites.size(); i++) {
+//            for (int j = i+1; j < sprites.size(); j++) {
+//                Sprite s1 = sprites.get(i);
+//                Sprite s2 = sprites.get(j);
+//                if (s1 != s2) {
+//                    if (s1.isCollides(s2)) {
+//                        s1.changeVelocity();
+//                        s2.changeVelocity();
+//                    }
+//                }
+//            }
+//        }
+//        }
 
-                    }
-                }
-            }
-        }
-    }
 
     /**
      * Metodo encargado de crear una copia de la lista de sprites. En esta copia se eliminarán los sprites colisionados.
@@ -200,8 +216,6 @@ public class GamePane extends JPanel implements Runnable {
 //        }
 //        sprites = (ArrayList<Sprite>) spritesAux.clone();
 //    }
-
-
     @Override
     public void run() {
         while (true) {
@@ -212,7 +226,7 @@ public class GamePane extends JPanel implements Runnable {
                     s.setPosX(s.getPosX() + s.getVx());
                     s.setPosY(s.getPosY() + s.getVy());
                     checkCollision(s);
-                    checkSpritesCollision();
+//                    checkSpritesCollision();
                 }
                 this.counter.refreshCounter();
                 repaint();
@@ -222,4 +236,16 @@ public class GamePane extends JPanel implements Runnable {
             }
         }
     }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        spaceShip.setPosX(e.getX()-spaceShip.getAncho()/2);
+        spaceShip.setPosY(e.getY()-spaceShip.getAlto()/2);
+    }
 }
+

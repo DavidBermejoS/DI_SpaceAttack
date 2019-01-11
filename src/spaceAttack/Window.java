@@ -2,6 +2,7 @@ package spaceAttack;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 /**
  * @author David Bermejo Simon
@@ -12,27 +13,40 @@ public class Window {
     Sprite sprite;
 
 
-    public Window(){
+    public Window() {
         frame = new JFrame("Actividad 1 UT9");
-        frame.setBounds(400,300,400,400);
+        frame.setBounds(600, 400, 400, 400);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
 
-    public void addComponents(){
+    public void addComponents() {
         this.frame.setLayout(new GridLayout());
         this.gamePane = new GamePane();
         frame.add(gamePane);
+
+
+        // Transparent 16 x 16 pixel cursor image.
+        BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+
+        // Create a new blank cursor.
+        Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
+                cursorImg,
+                new Point(0, 0),
+                "blank cursor"
+        );
+
+        // Set the blank cursor to the JFrame.
+        frame.getContentPane().setCursor(blankCursor);
     }
 
 
-
-    public void addListeners(){
+    public void addListeners() {
 
     }
 
 
-    public void inicializate(){
+    public void inicializate() {
         addComponents();
         addListeners();
         this.frame.setVisible(true);
