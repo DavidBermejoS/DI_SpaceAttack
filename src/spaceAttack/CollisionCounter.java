@@ -3,7 +3,7 @@ package spaceAttack;
 import javax.swing.*;
 import java.awt.*;
 
-public class CollisionCounter extends JLabel {
+public class CollisionCounter extends JLabel implements Runnable{
 
     int collisions;
 
@@ -28,5 +28,7 @@ public class CollisionCounter extends JLabel {
     }
 
 
-
+    @Override
+    public void run() {
+    }
 }
