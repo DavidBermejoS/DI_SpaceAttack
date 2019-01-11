@@ -162,13 +162,17 @@ public class Sprite {
         this.fileImage = fileImage;
     }
 
+
+
+
+
     /**
-     * Metodo encargado de determinar si un sprite colisiona con otro
+     * Metodo encargado de crear un collider cuadrado y determinar si un sprite
+     * colisiona con otro
      * @param s2 : sprite a comparar
      * @return check : true si colisionan, false si no.
      */
-    public boolean isCollides(Sprite s2) {
-
+//    public boolean squareCollider(Sprite s2){
 //        boolean collidesX =false , collidesY = false;
 //
 //        //calculo de la colision en el eje horizontal
@@ -198,37 +202,43 @@ public class Sprite {
 //        }
 //
 //        return collidesX && collidesY;
+//    }
 
 
-        //valor entero para representar la distancia
-        double d;
-        int radioS1=this.getAncho()/2;
-        int radioS2=s2.getAncho()/2;
 
-        //valor entero para representar la suma de los radios
-        int plusRadios = radioS1 + radioS2;
-        boolean collides;
-
-        //vector de 2 dimensiones con el valor x e y del centro del sprite original.
-        int[] center1 = {this.getPosX() - radioS1, this.getPosY() - radioS1};
-        //vector de 2 dimensiones con el valor x e y del centro del sprite s2.
-        int[] center2 = {s2.getPosX() - radioS2, s2.getPosY() - radioS2};
-
-        if (checkCenterCloseness(center1, center2) == 0) {
-            d = Math.sqrt(Math.pow(center2[0]-center1[0], 2) + Math.pow(center2[1]-center1[1], 2));
-        } else {
-            d = Math.sqrt(Math.pow(center1[0]-center2[0], 2) + Math.pow(center1[1]-center2[1], 2));
-        }
-
-        if (d <= plusRadios) {
-            collides = true;
-        } else {
-            collides = false;
-        }
-
-
-        return collides;
-    }
+    /**
+     * Metodo encargado de crear un collider circular y determinar si un sprite
+     * colisiona con otro
+     * @return check : true si colisionan, false si no.
+     */
+//    public boolean circleCollider(Sprite s2) {
+//        //valor entero para representar la distancia
+//        double d;
+//        int radioS1=this.getAncho()/2;
+//        int radioS2=s2.getAncho()/2;
+//
+//        //valor entero para representar la suma de los radios
+//        int plusRadios = radioS1 + radioS2;
+//        boolean collides;
+//
+//        //vector de 2 dimensiones con el valor x e y del centro del sprite original.
+//        int[] center1 = {this.getPosX() - radioS1, this.getPosY() - radioS1};
+//        //vector de 2 dimensiones con el valor x e y del centro del sprite s2.
+//        int[] center2 = {s2.getPosX() - radioS2, s2.getPosY() - radioS2};
+//
+//        if (checkCenterCloseness(center1, center2) == 0) {
+//            d = Math.sqrt(Math.pow(center2[0]-center1[0], 2) + Math.pow(center2[1]-center1[1], 2));
+//        } else {
+//            d = Math.sqrt(Math.pow(center1[0]-center2[0], 2) + Math.pow(center1[1]-center2[1], 2));
+//        }
+//
+//        if (d <= plusRadios) {
+//            collides = true;
+//        } else {
+//            collides = false;
+//        }
+//        return collides;
+//    }
 
     /**
      * Metodo encargado de comprobar cual de los puntos es más cercano al eje de coordenadas 0,0
@@ -237,33 +247,33 @@ public class Sprite {
      * @param center2
      * @return 0 si el centro 1 es el mas cercano, 1 en caso contrario.
      */
-    private int checkCenterCloseness(int[] center1, int[] center2) {
-        double d1, d2;
-        int result;
-        d1 = Math.sqrt(Math.pow(center1[0], 2) + Math.pow(center1[1], 2));
-        d2 = Math.sqrt(Math.pow(center2[0], 2) + Math.pow(center2[1], 2));
-        if (d1 <= d2) {
-            result = 0;
-        } else {
-            result = 1;
-        }
-        return result;
-    }
+//    private int checkCenterCloseness(int[] center1, int[] center2) {
+//        double d1, d2;
+//        int result;
+//        d1 = Math.sqrt(Math.pow(center1[0], 2) + Math.pow(center1[1], 2));
+//        d2 = Math.sqrt(Math.pow(center2[0], 2) + Math.pow(center2[1], 2));
+//        if (d1 <= d2) {
+//            result = 0;
+//        } else {
+//            result = 1;
+//        }
+//        return result;
+//    }
 
     /**
      * Metodo encargado de cambiar la velocidad en el vector contrario.
      */
-    public void changeVelocity(){
-        if(this.getVx() < 0){
-            this.setVx(Math.abs(this.getVx()));
-        }else{
-            this.setVx(Math.abs(this.getVx())*-1);
-        }
-
-        if(this.getVx()>0){
-            this.setVy(Math.abs(this.getVy()));
-        }else{
-            this.setVy(Math.abs(this.getVy())*-1);
-        }
-    }
+//    public void changeVelocity(){
+//        if(this.getVx() < 0){
+//            this.setVx(Math.abs(this.getVx()));
+//        }else{
+//            this.setVx(Math.abs(this.getVx())*-1);
+//        }
+//
+//        if(this.getVx()>0){
+//            this.setVy(Math.abs(this.getVy()));
+//        }else{
+//            this.setVy(Math.abs(this.getVy())*-1);
+//        }
+//    }
 }
