@@ -3,10 +3,7 @@ package spaceAttack;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -19,10 +16,20 @@ import static java.lang.Thread.sleep;
 /**
  * @author David Bermejo Simon
  **/
-public class GamePane extends JPanel implements Runnable, MouseMotionListener {
+public class GamePane extends JPanel implements Runnable, MouseMotionListener, MouseListener {
 
+    private static final int WIDTH_SHOOT = 10;
+    private static final int HEIGHT_SHOOT = 20;
+    private static final Color COLOR_SHOOT = Color.GREEN;
+    private static final int WIDTH_ASTEROID = 40;
+    private static final int HEIGHT_ASTEROID = 40;
+    private static final int WIDTH_SPACESHIP = 30;
+    private static final int HEIGHT_SPACESHIP = 40;
+    private static final int VELOCITY_SHOOT = 10;
     ArrayList<Sprite> sprites;
+
     Sprite spaceShip;
+    Sprite laserShoot;
     Timer timer;
 
     int numSprites;
@@ -49,6 +56,7 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener {
         //comienza el ciclo de refresco del panel de juego con sus listeners
         new Thread(this).start();
         this.addMouseMotionListener(this);
+        this.addMouseListener(this);
 
     }
 
@@ -62,8 +70,8 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener {
             Sprite sprite = new Sprite();
             sprite.setPosX(0);
             sprite.setPosY(0);
-            sprite.setAncho(40);
-            sprite.setAlto(40);
+            sprite.setAncho(WIDTH_ASTEROID);
+            sprite.setAlto(HEIGHT_ASTEROID);
             sprite.setVx(rd.nextInt(6) + 1);
             sprite.setVy(rd.nextInt(6) + 1);
             sprite.setFileImage(new File(asteroidImage));
@@ -79,8 +87,8 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener {
      */
     private void addSpaceShip() {
         spaceShip = new Sprite();
-        spaceShip.setAncho(40);
-        spaceShip.setAlto(40);
+        spaceShip.setAncho(WIDTH_SPACESHIP);
+        spaceShip.setAlto(HEIGHT_SPACESHIP);
         spaceShip.setPosX(this.getWidth());
         spaceShip.setPosY(this.getHeight());
         spaceShip.setFileImage(new File(spaceShipImage));
@@ -142,7 +150,7 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener {
     private void drawTimer(Graphics g) {
         g.setColor(Color.RED);
         g.drawString(String.valueOf(new DecimalFormat("#.##").format(timeCount)),
-                getWidth()-30,
+                this.getWidth()-30,
                 this.getHeight()-20);
     }
 
@@ -246,7 +254,7 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener {
         while (true) {
 
             try {
-                sleep(25);
+                sleep(30);
                 for (Sprite s : sprites) {
                     s.setPosX(s.getPosX() + s.getVx());
                     s.setPosY(s.getPosY() + s.getVy());
@@ -270,6 +278,38 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener {
     public void mouseMoved(MouseEvent e) {
         spaceShip.setPosX(e.getX()-spaceShip.getAncho()/2);
         spaceShip.setPosY(e.getY()-spaceShip.getAlto()/2);
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        laserShoot = new Sprite();
+        laserShoot.setPosX(e.getX()-spaceShip.getAncho()/2);
+        laserShoot.setPosY(e.getX()-spaceShip.getAlto()/2);
+        laserShoot.setVy(VELOCITY_SHOOT);
+        laserShoot.setColor(COLOR_SHOOT);
+        laserShoot.setAncho(WIDTH_SHOOT);
+        laserShoot.setAlto(HEIGHT_SHOOT);
+        sprites.add(laserShoot);
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
     }
 }
 
