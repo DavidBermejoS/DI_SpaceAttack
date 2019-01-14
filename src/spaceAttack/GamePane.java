@@ -20,12 +20,12 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
 
     private static final int WIDTH_SHOOT = 20;
     private static final int HEIGHT_SHOOT = 40;
-    private static final Color COLOR_SHOOT = Color.GREEN;
     private static final int WIDTH_ASTEROID = 40;
     private static final int HEIGHT_ASTEROID = 40;
     private static final int WIDTH_SPACESHIP = 30;
     private static final int HEIGHT_SPACESHIP = 40;
-    private static final int VELOCITY_SHOOT = -10;
+    private static final int VELOCITY_SHOOT = -20;
+
     ArrayList<Sprite> sprites;
 
     Sprite spaceShip;
@@ -44,6 +44,7 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
 
 
     double timeCount;
+
     //variable lógica para comprobar que la nave ya ha disparado
     boolean shootCooldown;
 
@@ -60,7 +61,6 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
         new Thread(this).start();
         this.addMouseMotionListener(this);
         this.addMouseListener(this);
-
     }
 
 
@@ -127,11 +127,11 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
         drawTimer(g);
     }
 
-    private void drawShoot(Graphics g) {
-        if (laserShoot != null) {
-            g.drawImage(laserShoot.getBuffer(),laserShoot.getPosX(),laserShoot.getPosY(),null);
-        }
-    }
+//    private void drawShoot(Graphics g) {
+//        if (laserShoot != null) {
+//            g.drawImage(laserShoot.getBuffer(),laserShoot.getPosX(),laserShoot.getPosY(),null);
+//        }
+//    }
 
 
     /**
@@ -210,7 +210,7 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
      *
      * @param sprite
      */
-    private void checkCollision(Sprite sprite) {
+    private void checkWallsCollision(Sprite sprite) {
         if (sprite != laserShoot) {
             if (sprite.getPosX() <= 0) {
                 sprite.setVx(Math.abs(sprite.getVx()));
@@ -223,7 +223,6 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
             } else if (sprite.getPosY() >= this.getHeight() - sprite.getAlto()) {
                 sprite.setVy(Math.abs(sprite.getVy()) * -1);
             }
-
         }
     }
 
@@ -237,8 +236,10 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
             for (int i = 0; i < sprites.size(); i++) {
                 Sprite s1 = sprites.get(i);
                 if(s1!=spaceShip && s1!=laserShoot){
-                    if (s1.squareCollider(laserShoot)) {
+                    if (s1.squareCollider(laserShoot)){
                         s1.setDestroyed(true);
+                        laserShoot.setDestroyed(true);
+                        this.shootCooldown=false;
                     }
                 }
             }
@@ -266,10 +267,15 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
      */
     private void checkCoolDown() {
         if (laserShoot.getPosY() + laserShoot.getAlto() < 0) {
-            laserShoot.setColor(null);
+//            laserShoot.setColor(null);
             sprites.remove(laserShoot);
             this.shootCooldown = false;
         }
+    }
+
+    public void moveSprites(Sprite s){
+        s.setPosX(s.getPosX() + s.getVx());
+        s.setPosY(s.getPosY() + s.getVy());
     }
 
 
@@ -277,19 +283,22 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
     public void run() {
         while (true) {
             try {
+                repaint();
                 sleep(20);
+
                 for (Sprite s : sprites) {
-                    s.setPosX(s.getPosX() + s.getVx());
-                    s.setPosY(s.getPosY() + s.getVy());
-                    checkCollision(s);
+                    moveSprites(s);
+                    checkWallsCollision(s);
                     checkAsteroidShooted();
                 }
                 if (shootCooldown) {
                     checkCoolDown();
                 }
                 destroyCollisionedSprites();
-                repaint();
+
+
                 Toolkit.getDefaultToolkit().sync();
+
 
             } catch (InterruptedException e) {
                 e.printStackTrace();
