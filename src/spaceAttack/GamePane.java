@@ -18,8 +18,8 @@ import static java.lang.Thread.sleep;
  **/
 public class GamePane extends JPanel implements Runnable, MouseMotionListener, MouseListener {
 
-    private static final int WIDTH_SHOOT = 10;
-    private static final int HEIGHT_SHOOT = 20;
+    private static final int WIDTH_SHOOT = 20;
+    private static final int HEIGHT_SHOOT = 40;
     private static final Color COLOR_SHOOT = Color.GREEN;
     private static final int WIDTH_ASTEROID = 40;
     private static final int HEIGHT_ASTEROID = 40;
@@ -40,6 +40,7 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
     //rutas relativas a los recursos de imagen
     String asteroidImage = "resources/images/asteroide.png";
     String spaceShipImage = "resources/images/nave.png";
+    String laserImage = "resources/images/laser.png";
 
 
     double timeCount;
@@ -122,14 +123,13 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
     protected void paintComponent(Graphics g) {
         drawBackground(g);
         drawSprite(g);
-        drawShoot(g);
+//        drawShoot(g);
         drawTimer(g);
     }
 
     private void drawShoot(Graphics g) {
         if (laserShoot != null) {
-            g.setColor(laserShoot.getColor());
-            g.fillRect(laserShoot.getPosX(), laserShoot.getPosY(), laserShoot.getAncho(), laserShoot.getAlto());
+            g.drawImage(laserShoot.getBuffer(),laserShoot.getPosX(),laserShoot.getPosY(),null);
         }
     }
 
@@ -318,12 +318,13 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
     public void mousePressed(MouseEvent e) {
         if (!shootCooldown) {
             laserShoot = new Sprite();
+            laserShoot.setAncho(WIDTH_SHOOT);
+            laserShoot.setAlto(HEIGHT_SHOOT);
             laserShoot.setPosX(e.getX() - spaceShip.getAncho() / 2);
             laserShoot.setPosY(e.getY() - spaceShip.getAlto() / 2);
             laserShoot.setVy(VELOCITY_SHOOT);
-            laserShoot.setColor(COLOR_SHOOT);
-            laserShoot.setAncho(WIDTH_SHOOT);
-            laserShoot.setAlto(HEIGHT_SHOOT);
+            laserShoot.setFileImage(new File(laserImage));
+            laserShoot.refreshBuffer();
             this.shootCooldown = true;
             sprites.add(laserShoot);
         }
