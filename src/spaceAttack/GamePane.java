@@ -3,10 +3,7 @@ package spaceAttack;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -19,10 +16,20 @@ import static java.lang.Thread.sleep;
 /**
  * @author David Bermejo Simon
  **/
-public class GamePane extends JPanel implements Runnable, MouseMotionListener {
+public class GamePane extends JPanel implements Runnable, MouseMotionListener, MouseListener {
 
+    private static final int WIDTH_SHOOT = 10;
+    private static final int HEIGHT_SHOOT = 20;
+    private static final Color COLOR_SHOOT = Color.GREEN;
+    private static final int WIDTH_ASTEROID = 40;
+    private static final int HEIGHT_ASTEROID = 40;
+    private static final int WIDTH_SPACESHIP = 30;
+    private static final int HEIGHT_SPACESHIP = 40;
+    private static final int VELOCITY_SHOOT = -10;
     ArrayList<Sprite> sprites;
+
     Sprite spaceShip;
+    Sprite laserShoot;
     Timer timer;
 
     int numSprites;
@@ -36,6 +43,8 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener {
 
 
     double timeCount;
+    //variable lógica para comprobar que la nave ya ha disparado
+     boolean shootCooldown;
 
     public GamePane() {
         this.numSprites = 0;
@@ -49,6 +58,7 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener {
         //comienza el ciclo de refresco del panel de juego con sus listeners
         new Thread(this).start();
         this.addMouseMotionListener(this);
+        this.addMouseListener(this);
 
     }
 
@@ -62,8 +72,8 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener {
             Sprite sprite = new Sprite();
             sprite.setPosX(0);
             sprite.setPosY(0);
-            sprite.setAncho(40);
-            sprite.setAlto(40);
+            sprite.setAncho(WIDTH_ASTEROID);
+            sprite.setAlto(HEIGHT_ASTEROID);
             sprite.setVx(rd.nextInt(6) + 1);
             sprite.setVy(rd.nextInt(6) + 1);
             sprite.setFileImage(new File(asteroidImage));
@@ -79,8 +89,8 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener {
      */
     private void addSpaceShip() {
         spaceShip = new Sprite();
-        spaceShip.setAncho(40);
-        spaceShip.setAlto(40);
+        spaceShip.setAncho(WIDTH_SPACESHIP);
+        spaceShip.setAlto(HEIGHT_SPACESHIP);
         spaceShip.setPosX(this.getWidth());
         spaceShip.setPosY(this.getHeight());
         spaceShip.setFileImage(new File(spaceShipImage));
@@ -111,7 +121,15 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener {
     protected void paintComponent(Graphics g) {
         drawBackground(g);
         drawSprite(g);
+        drawShoot(g);
         drawTimer(g);
+    }
+
+    private void drawShoot(Graphics g) {
+        if(laserShoot!=null){
+            g.setColor(laserShoot.getColor());
+            g.fillRect(laserShoot.getPosX(),laserShoot.getPosY(),laserShoot.getAncho(),laserShoot.getAlto());
+        }
     }
 
 
@@ -142,7 +160,7 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener {
     private void drawTimer(Graphics g) {
         g.setColor(Color.RED);
         g.drawString(String.valueOf(new DecimalFormat("#.##").format(timeCount)),
-                getWidth()-30,
+                this.getWidth()-30,
                 this.getHeight()-20);
     }
 
@@ -192,16 +210,19 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener {
      * @param sprite
      */
     private void checkCollision(Sprite sprite) {
-        if (sprite.getPosX() <= 0) {
-            sprite.setVx(Math.abs(sprite.getVx()));
-        } else if (sprite.getPosX() >= this.getWidth() - sprite.getAncho()) {
-            sprite.setVx(Math.abs(sprite.getVx()) * -1);
-        }
+        if(sprite!=laserShoot){
+            if (sprite.getPosX() <= 0) {
+                sprite.setVx(Math.abs(sprite.getVx()));
+            } else if (sprite.getPosX() >= this.getWidth() - sprite.getAncho()) {
+                sprite.setVx(Math.abs(sprite.getVx()) * -1);
+            }
 
-        if (sprite.getPosY() <= 0) {
-            sprite.setVy(Math.abs(sprite.getVy()));
-        } else if (sprite.getPosY() >= this.getHeight() - sprite.getAlto()) {
-            sprite.setVy(Math.abs(sprite.getVy()) * -1);
+            if (sprite.getPosY() <= 0) {
+                sprite.setVy(Math.abs(sprite.getVy()));
+            } else if (sprite.getPosY() >= this.getHeight() - sprite.getAlto()) {
+                sprite.setVy(Math.abs(sprite.getVy()) * -1);
+            }
+
         }
     }
 
@@ -226,6 +247,7 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener {
 //        }
 
 
+
     /**
      * Metodo encargado de crear una copia de la lista de sprites. En esta copia se eliminarán los sprites colisionados.
      * Posteriormente la lista original se actualizará con la información de la copia.
@@ -241,19 +263,37 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener {
 //        sprites = (ArrayList<Sprite>) spritesAux.clone();
 //    }
 
+    /**
+     * Metodo que comprueba si el disparo ha abandonado los limites de la ventana para marcar el
+     * enfriamiento a false para que la nave pueda volver a disparar.
+     */
+    private void checkCoolDown() {
+        if(laserShoot.getPosY()+laserShoot.getAlto()<0){
+            laserShoot.setColor(null);
+            sprites.remove(laserShoot);
+            this.shootCooldown=false;
+        }
+    }
+
+
     @Override
     public void run() {
         while (true) {
 
             try {
-                sleep(25);
+                sleep(20);
                 for (Sprite s : sprites) {
                     s.setPosX(s.getPosX() + s.getVx());
                     s.setPosY(s.getPosY() + s.getVy());
                     checkCollision(s);
+
 //                    checkSpritesCollision();
                 }
+                if(shootCooldown){
+                    checkCoolDown();
+                }
                 repaint();
+                Toolkit.getDefaultToolkit().sync();
 
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -267,9 +307,44 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener {
     }
 
     @Override
-    public void mouseMoved(MouseEvent e) {
+    public void mouseMoved(MouseEvent e){
         spaceShip.setPosX(e.getX()-spaceShip.getAncho()/2);
         spaceShip.setPosY(e.getY()-spaceShip.getAlto()/2);
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        if(!shootCooldown){
+            laserShoot = new Sprite();
+            laserShoot.setPosX(e.getX()-spaceShip.getAncho()/2);
+            laserShoot.setPosY(e.getY()-spaceShip.getAlto()/2);
+            laserShoot.setVy(VELOCITY_SHOOT);
+            laserShoot.setColor(COLOR_SHOOT);
+            laserShoot.setAncho(WIDTH_SHOOT);
+            laserShoot.setAlto(HEIGHT_SHOOT);
+            this.shootCooldown = true;
+            sprites.add(laserShoot);
+        }
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
     }
 }
 
