@@ -44,7 +44,7 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
 
     double timeCount;
     //variable lógica para comprobar que la nave ya ha disparado
-     boolean shootCooldown;
+    boolean shootCooldown;
 
     public GamePane() {
         this.numSprites = 0;
@@ -107,7 +107,7 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
         this.timer = new Timer(9, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                timeCount+=0.01;
+                timeCount += 0.01;
             }
         });
     }
@@ -115,6 +115,7 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
 
     /**
      * Metodo para repintar los componentes en la pantalla
+     *
      * @param g
      */
     @Override
@@ -126,9 +127,9 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
     }
 
     private void drawShoot(Graphics g) {
-        if(laserShoot!=null){
+        if (laserShoot != null) {
             g.setColor(laserShoot.getColor());
-            g.fillRect(laserShoot.getPosX(),laserShoot.getPosY(),laserShoot.getAncho(),laserShoot.getAlto());
+            g.fillRect(laserShoot.getPosX(), laserShoot.getPosY(), laserShoot.getAncho(), laserShoot.getAlto());
         }
     }
 
@@ -155,13 +156,14 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
 
     /**
      * Dibuja el contador de tiempo en el panel de juego
+     *
      * @param g
      */
     private void drawTimer(Graphics g) {
         g.setColor(Color.RED);
         g.drawString(String.valueOf(new DecimalFormat("#.##").format(timeCount)),
-                this.getWidth()-30,
-                this.getHeight()-20);
+                this.getWidth() - 30,
+                this.getHeight() - 20);
     }
 
 
@@ -202,7 +204,6 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
     }
 
 
-
     /**
      * Metodo encargado de comprobar las colisiones con las paredes de la ventana y cambiar la velocidad
      * en caso de que exista dicha colision
@@ -210,7 +211,7 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
      * @param sprite
      */
     private void checkCollision(Sprite sprite) {
-        if(sprite!=laserShoot){
+        if (sprite != laserShoot) {
             if (sprite.getPosX() <= 0) {
                 sprite.setVx(Math.abs(sprite.getVx()));
             } else if (sprite.getPosX() >= this.getWidth() - sprite.getAncho()) {
@@ -228,50 +229,46 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
 
 
     /**
-     * Metodo encargado de comprobar si dos sprites colisionan entre si.
-     * Si estos colisionan entre si, se marcara su atributo destroyed a true.
+     * Metodo encargado de comprobar si un asteroide colisiona con el disparo.
+     * Si estos colisionan entre si, se marcara el atributo destroyed del asteroide a true.
      */
-//    private void checkSpritesCollision() {
-//        for (int i = 0; i < sprites.size(); i++) {
-//            for (int j = i+1; j < sprites.size(); j++) {
-//                Sprite s1 = sprites.get(i);
-//                Sprite s2 = sprites.get(j);
-//                if (s1 != s2) {
-//                    if (s1.circleCollider(s2)) {
-//                        s1.changeVelocity();
-//                        s2.changeVelocity();
-//                    }
-//                }
-//            }
-//        }
-//        }
-
+    private void checkAsteroidShooted() {
+        if(shootCooldown){
+            for (int i = 0; i < sprites.size(); i++) {
+                Sprite s1 = sprites.get(i);
+                if(s1!=spaceShip && s1!=laserShoot){
+                    if (s1.squareCollider(laserShoot)) {
+                        s1.setDestroyed(true);
+                    }
+                }
+            }
+        }
+    }
 
 
     /**
      * Metodo encargado de crear una copia de la lista de sprites. En esta copia se eliminarán los sprites colisionados.
      * Posteriormente la lista original se actualizará con la información de la copia.
      */
-//    private void destroyCollisionedSprites() {
-//        ArrayList<Sprite> spritesAux = (ArrayList<Sprite>) sprites.clone();
-//        for (Sprite s : sprites) {
-//            if (s.isDestroyed()) {
-//                spritesAux.remove(s);
-//                this.timer.plusCollision();
-//            }
-//        }
-//        sprites = (ArrayList<Sprite>) spritesAux.clone();
-//    }
+    private void destroyCollisionedSprites() {
+        ArrayList<Sprite> spritesAux = (ArrayList<Sprite>) sprites.clone();
+        for (Sprite s : sprites) {
+            if (s.isDestroyed()) {
+                spritesAux.remove(s);
+            }
+        }
+        sprites = (ArrayList<Sprite>) spritesAux.clone();
+    }
 
     /**
      * Metodo que comprueba si el disparo ha abandonado los limites de la ventana para marcar el
      * enfriamiento a false para que la nave pueda volver a disparar.
      */
     private void checkCoolDown() {
-        if(laserShoot.getPosY()+laserShoot.getAlto()<0){
+        if (laserShoot.getPosY() + laserShoot.getAlto() < 0) {
             laserShoot.setColor(null);
             sprites.remove(laserShoot);
-            this.shootCooldown=false;
+            this.shootCooldown = false;
         }
     }
 
@@ -279,19 +276,18 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
     @Override
     public void run() {
         while (true) {
-
             try {
                 sleep(20);
                 for (Sprite s : sprites) {
                     s.setPosX(s.getPosX() + s.getVx());
                     s.setPosY(s.getPosY() + s.getVy());
                     checkCollision(s);
-
-//                    checkSpritesCollision();
+                    checkAsteroidShooted();
                 }
-                if(shootCooldown){
+                if (shootCooldown) {
                     checkCoolDown();
                 }
+                destroyCollisionedSprites();
                 repaint();
                 Toolkit.getDefaultToolkit().sync();
 
@@ -307,17 +303,17 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
     }
 
     @Override
-    public void mouseMoved(MouseEvent e){
-        spaceShip.setPosX(e.getX()-spaceShip.getAncho()/2);
-        spaceShip.setPosY(e.getY()-spaceShip.getAlto()/2);
+    public void mouseMoved(MouseEvent e) {
+        spaceShip.setPosX(e.getX() - spaceShip.getAncho() / 2);
+        spaceShip.setPosY(e.getY() - spaceShip.getAlto() / 2);
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if(!shootCooldown){
+        if (!shootCooldown) {
             laserShoot = new Sprite();
-            laserShoot.setPosX(e.getX()-spaceShip.getAncho()/2);
-            laserShoot.setPosY(e.getY()-spaceShip.getAlto()/2);
+            laserShoot.setPosX(e.getX() - spaceShip.getAncho() / 2);
+            laserShoot.setPosY(e.getY() - spaceShip.getAlto() / 2);
             laserShoot.setVy(VELOCITY_SHOOT);
             laserShoot.setColor(COLOR_SHOOT);
             laserShoot.setAncho(WIDTH_SHOOT);
