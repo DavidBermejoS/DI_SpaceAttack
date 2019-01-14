@@ -310,6 +310,12 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
 
     @Override
     public void mouseClicked(MouseEvent e) {
+
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
         if (!shootCooldown) {
             laserShoot = new Sprite();
             laserShoot.setPosX(e.getX() - spaceShip.getAncho() / 2);
@@ -321,11 +327,6 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
             this.shootCooldown = true;
             sprites.add(laserShoot);
         }
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-
     }
 
     @Override
