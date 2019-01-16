@@ -14,10 +14,14 @@ import java.util.Random;
 import static java.lang.Thread.sleep;
 
 /**
+ * Clase GamePane
+ * Esta clase gestiona el panel de juego junto al personaje y los elementos que interactuan en el juego
+ *
  * @author David Bermejo Simon
  **/
 public class GamePane extends JPanel implements Runnable, MouseMotionListener, MouseListener {
 
+    //PARAMETROS Y VALORES CONSTANTES DE LOS OBJETOS
     private static final int WIDTH_SHOOT = 20;
     private static final int HEIGHT_SHOOT = 40;
     private static final int WIDTH_ASTEROID = 40;
@@ -26,38 +30,34 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
     private static final int HEIGHT_SPACESHIP = 40;
     private static final int VELOCITY_SHOOT = -20;
 
-    ArrayList<Sprite> sprites;
+    //CADENAS DE TEXTO CON LAS RUTAS A LAS IMAGENES
+    private static final String ASTEROID_IMAGE = "resources/images/asteroide.png";
+    private static final String SPACE_SHIP_IMAGE = "resources/images/nave.png";
+    private static final String LASER_IMAGE = "resources/images/laser.png";
+    private static final String BACKGROUND_WELCOME = "resources/images/backgroundWelcome.jpg";
+    private static final String BACKGROUND_GAME = "resources/images/background.jpg";
+    private static final int INTERLINE_SPACE = 30;
 
+    //PARAMETROS DE CONTROL
+    private int numSprites;
+    private double timeCount;
+    private boolean shootCooldown;
+    private boolean isGaming;
+
+    ArrayList<Sprite> sprites;
     Sprite spaceShip;
     Sprite laserShoot;
     Timer timer;
-
-    int numSprites;
-
-    //imagen de fondo
     Image backgroundImage;
 
-    //rutas relativas a los recursos de imagen
-    String asteroidImage = "resources/images/asteroide.png";
-    String spaceShipImage = "resources/images/nave.png";
-    String laserImage = "resources/images/laser.png";
 
-
-    double timeCount;
-
-    //variable lógica para comprobar que la nave ya ha disparado
-    boolean shootCooldown;
-
+    /**
+     * CONSTRUCTOR DE LA CLASE
+     */
     public GamePane() {
         this.numSprites = 0;
+        this.isGaming = false;
         sprites = new ArrayList<>();
-        //se anaden los asteroides, la nave y el tiempo
-        addAsteroids();
-        addSpaceShip();
-        addTimer();
-        //se inicializa el tiempo
-        this.timer.start();
-        //comienza el ciclo de refresco del panel de juego con sus listeners
         new Thread(this).start();
         this.addMouseMotionListener(this);
         this.addMouseListener(this);
@@ -68,6 +68,7 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
      * Metodo encargado de anadir los asteroides al inicio de la partida
      */
     private void addAsteroids() {
+
         for (int i = 0; i < 6; i++) {
             Random rd = new Random();
             Sprite sprite = new Sprite();
@@ -77,27 +78,31 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
             sprite.setAlto(HEIGHT_ASTEROID);
             sprite.setVx(rd.nextInt(6) + 1);
             sprite.setVy(rd.nextInt(6) + 1);
-            sprite.setFileImage(new File(asteroidImage));
+            sprite.setFileImage(new File(ASTEROID_IMAGE));
             sprite.refreshBuffer();
             sprite.setIdSprite(numSprites);
             sprites.add(sprite);
         }
         numSprites++;
+
     }
 
     /**
      * Metodo encargado de anadir la nave al inicio de la partida
      */
     private void addSpaceShip() {
+
+
         spaceShip = new Sprite();
         spaceShip.setAncho(WIDTH_SPACESHIP);
         spaceShip.setAlto(HEIGHT_SPACESHIP);
         spaceShip.setPosX(this.getWidth());
         spaceShip.setPosY(this.getHeight());
-        spaceShip.setFileImage(new File(spaceShipImage));
+        spaceShip.setFileImage(new File(SPACE_SHIP_IMAGE));
         spaceShip.refreshBuffer();
         spaceShip.setIdSprite(numSprites);
         sprites.add(spaceShip);
+
     }
 
 
@@ -111,6 +116,7 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
                 timeCount += 0.01;
             }
         });
+        this.timer.start();
     }
 
 
@@ -122,16 +128,13 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
     @Override
     protected void paintComponent(Graphics g) {
         drawBackground(g);
-        drawSprite(g);
-//        drawShoot(g);
-        drawTimer(g);
+        if (isGaming) {
+            drawSprite(g);
+            drawTimer(g);
+        } else {
+            drawAnimationScreen(g);
+        }
     }
-
-//    private void drawShoot(Graphics g) {
-//        if (laserShoot != null) {
-//            g.drawImage(laserShoot.getBuffer(),laserShoot.getPosX(),laserShoot.getPosY(),null);
-//        }
-//    }
 
 
     /**
@@ -154,6 +157,7 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
         }
     }
 
+
     /**
      * Dibuja el contador de tiempo en el panel de juego
      *
@@ -173,11 +177,17 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
      * @param g
      */
     private void drawBackground(Graphics g) {
-        File bckg = new File("resources/images/background.jpg");
+        File bckg;
+        if (isGaming) {
+            bckg = new File(BACKGROUND_GAME);
+        } else {
+            bckg = new File(BACKGROUND_WELCOME);
+        }
         backgroundImage = obtainImage(bckg);
         backgroundImage = scaleImage(backgroundImage);
         g.drawImage(backgroundImage, 0, 0, null);
     }
+
 
     /**
      * Metodo para cargar en memoria las imagenes que necesitemos
@@ -193,6 +203,7 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
         }
         return image;
     }
+
 
     /**
      * Metodo para reescalar imagenes
@@ -232,14 +243,14 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
      * Si estos colisionan entre si, se marcara el atributo destroyed del asteroide a true.
      */
     private void checkAsteroidShooted() {
-        if(shootCooldown){
+        if (shootCooldown) {
             for (int i = 0; i < sprites.size(); i++) {
                 Sprite s1 = sprites.get(i);
-                if(s1!=spaceShip && s1!=laserShoot){
-                    if (s1.squareCollider(laserShoot)){
+                if (s1 != spaceShip && s1 != laserShoot) {
+                    if (s1.squareCollider(laserShoot)) {
                         s1.setDestroyed(true);
                         laserShoot.setDestroyed(true);
-                        this.shootCooldown=false;
+                        this.shootCooldown = false;
                     }
                 }
             }
@@ -261,21 +272,75 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
         sprites = (ArrayList<Sprite>) spritesAux.clone();
     }
 
+
     /**
      * Metodo que comprueba si el disparo ha abandonado los limites de la ventana para marcar el
      * enfriamiento a false para que la nave pueda volver a disparar.
      */
     private void checkCoolDown() {
         if (laserShoot.getPosY() + laserShoot.getAlto() < 0) {
-//            laserShoot.setColor(null);
             sprites.remove(laserShoot);
             this.shootCooldown = false;
         }
     }
 
-    public void moveSprites(Sprite s){
+
+    /**
+     * Metodo encargado de actualizar la posicion de sus sprites acorde a su velocidad
+     *
+     * @param s : sprite a modificar.
+     */
+    public void moveSprites(Sprite s) {
         s.setPosX(s.getPosX() + s.getVx());
         s.setPosY(s.getPosY() + s.getVy());
+    }
+
+    /**
+     * Metodo encargado de gestionar la animacion de la pantalla principal
+     */
+    private void drawAnimationScreen(Graphics g) {
+        Random r = new Random();
+
+
+        int red = 0;
+        int green = 0;
+        int blue = 0;
+
+
+        red = r.nextInt(256);
+        green = r.nextInt(256);
+        blue = r.nextInt(256);
+
+
+        g.setFont(new Font("MonoSpace", Font.BOLD, 24));
+        g.setColor(new Color(red, green, blue));
+        g.drawString("Space Attack!", this.getWidth() / 2, this.getHeight() / 2);
+        g.drawString("Haz click para comenzar", this.getWidth() / 2, this.getHeight() / 2 + INTERLINE_SPACE);
+        g.dispose();
+
+    }
+
+
+    /**
+     * Metodo encargado de gestionar el movimiento de los sprites y sus colisiones, además de calcular el
+     * cooldown del laser
+     */
+    public void manageGraphics() throws InterruptedException {
+        if (isGaming) {
+            Thread.currentThread().sleep(20);
+            for (Sprite s : sprites) {
+                moveSprites(s);
+                checkWallsCollision(s);
+                checkAsteroidShooted();
+            }
+            if (shootCooldown) {
+                checkCoolDown();
+            }
+            destroyCollisionedSprites();
+        } else {
+            Thread.currentThread().sleep(250);
+
+        }
     }
 
 
@@ -284,22 +349,8 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
         while (true) {
             try {
                 repaint();
-                sleep(20);
-
-                for (Sprite s : sprites) {
-                    moveSprites(s);
-                    checkWallsCollision(s);
-                    checkAsteroidShooted();
-                }
-                if (shootCooldown) {
-                    checkCoolDown();
-                }
-                destroyCollisionedSprites();
-
-
+                manageGraphics();
                 Toolkit.getDefaultToolkit().sync();
-
-
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -311,28 +362,39 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
         //no hace nada
     }
 
+
     @Override
     public void mouseMoved(MouseEvent e) {
-        spaceShip.setPosX(e.getX() - spaceShip.getAncho() / 2);
-        spaceShip.setPosY(e.getY() - spaceShip.getAlto() / 2);
+        if (isGaming) {
+            spaceShip.setPosX(e.getX() - spaceShip.getAncho() / 2);
+            spaceShip.setPosY(e.getY() - spaceShip.getAlto() / 2);
+        }
     }
+
 
     @Override
     public void mouseClicked(MouseEvent e) {
+        if (!isGaming) {
+            addAsteroids();
+            addSpaceShip();
+            addTimer();
 
+            isGaming = true;
+        }
 
     }
 
+
     @Override
     public void mousePressed(MouseEvent e) {
-        if (!shootCooldown) {
+        if (!shootCooldown && isGaming) {
             laserShoot = new Sprite();
             laserShoot.setAncho(WIDTH_SHOOT);
             laserShoot.setAlto(HEIGHT_SHOOT);
             laserShoot.setPosX(e.getX() - spaceShip.getAncho() / 2);
             laserShoot.setPosY(e.getY() - spaceShip.getAlto() / 2);
             laserShoot.setVy(VELOCITY_SHOOT);
-            laserShoot.setFileImage(new File(laserImage));
+            laserShoot.setFileImage(new File(LASER_IMAGE));
             laserShoot.refreshBuffer();
             this.shootCooldown = true;
             sprites.add(laserShoot);
