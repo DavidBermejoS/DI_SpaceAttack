@@ -307,10 +307,9 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
         int blue = 0;
 
 
-
-            red = r.nextInt(256);
-            green = r.nextInt(256);
-            blue = r.nextInt(256);
+        red = r.nextInt(256);
+        green = r.nextInt(256);
+        blue = r.nextInt(256);
 
 
         g.setFont(new Font("MonoSpace", Font.BOLD, 24));
@@ -326,8 +325,9 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
      * Metodo encargado de gestionar el movimiento de los sprites y sus colisiones, además de calcular el
      * cooldown del laser
      */
-    public void manageGraphics() {
+    public void manageGraphics() throws InterruptedException {
         if (isGaming) {
+            Thread.currentThread().sleep(20);
             for (Sprite s : sprites) {
                 moveSprites(s);
                 checkWallsCollision(s);
@@ -337,6 +337,9 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
                 checkCoolDown();
             }
             destroyCollisionedSprites();
+        } else {
+            Thread.currentThread().sleep(250);
+
         }
     }
 
@@ -346,7 +349,6 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
         while (true) {
             try {
                 repaint();
-                sleep(20);
                 manageGraphics();
                 Toolkit.getDefaultToolkit().sync();
             } catch (InterruptedException e) {
