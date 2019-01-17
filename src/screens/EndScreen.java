@@ -37,4 +37,14 @@ public class EndScreen implements Screen {
     public void resizeScreen(Graphics g) {
 
     }
+
+    @Override
+    public Graphics getGraphics() {
+        return null;
+    }
+
+    @Override
+    public void manageGraphics() throws InterruptedException {
+
+    }
 }
