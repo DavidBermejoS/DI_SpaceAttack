@@ -6,7 +6,9 @@ import spaceAttack.Sprite;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -16,15 +18,16 @@ import java.util.Random;
 /**
  * @author David Bermejo Simon
  **/
-public class GameScreen extends JPanel implements Screen, Runnable, MouseMotionListener, MouseListener {
+public class SecondScreen extends JPanel implements Screen {
 
     private static final int WIDTH_SHOOT = 20;
     private static final int HEIGHT_SHOOT = 40;
-    private static final int WIDTH_ASTEROID = 40;
-    private static final int HEIGHT_ASTEROID = 40;
+    private static final int VELOCITY_SHOOT = -30;
+    private static final int WIDTH_ASTEROID = 50;
+    private static final int HEIGHT_ASTEROID = 50;
+    private  static  final  int NUM_ASTEROID = 8;
     private static final int WIDTH_SPACESHIP = 30;
     private static final int HEIGHT_SPACESHIP = 40;
-    private static final int VELOCITY_SHOOT = -20;
 
 
     private static final String ASTEROID_IMAGE = "resources/images/asteroide.png";
@@ -44,38 +47,42 @@ public class GameScreen extends JPanel implements Screen, Runnable, MouseMotionL
 
     Screen actualScreen;
     GamePane gamePane;
+    int targetsDestroyed;
+    boolean playersAlive;
+    boolean gameOver;
 
-    public GameScreen(GamePane gamePane) {
+    public SecondScreen(GamePane gamePane) {
         actualScreen = this;
         this.gamePane = gamePane;
         startFrame();
     }
 
-    //Instancia la clase e inicializa parametros y listeners
+    //INSTANCIACION DE PARAMETROS DE LA PARTIDA E INICIO
     @Override
     public void startFrame() {
         this.numSprites = 0;
+        this.targetsDestroyed = 0;
+        this.playersAlive = true;
+        this.gameOver = false;
         sprites = new ArrayList<>();
         startScreen();
-        new Thread(this).start();
-        this.addMouseMotionListener(this);
-        this.addMouseListener(this);
+
     }
 
 
-    //inicializa la pantalla, instancia los asteroides, la nave y el timer
+    //INSTANCIACION DE ELEMENTOS DEL JUEGO
     @Override
     public void startScreen() {
         addAsteroids();
         addSpaceShip();
         addTimer();
-        repaint();
     }
+
     /**
      * Metodo encargado de anadir los asteroides al inicio de la partida
      */
     private void addAsteroids() {
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < NUM_ASTEROID; i++) {
             Random rd = new Random();
             Sprite sprite = new Sprite();
             sprite.setPosX(0);
@@ -86,12 +93,12 @@ public class GameScreen extends JPanel implements Screen, Runnable, MouseMotionL
             sprite.setVy(rd.nextInt(6) + 1);
             sprite.setFileImage(new File(ASTEROID_IMAGE));
             sprite.refreshBuffer();
-            sprite.setIdSprite(numSprites);
+            sprite.setIdSprite("asteroid");
             sprites.add(sprite);
         }
         numSprites++;
-
     }
+
     /**
      * Metodo encargado de anadir la nave al inicio de la partida
      */
@@ -99,14 +106,16 @@ public class GameScreen extends JPanel implements Screen, Runnable, MouseMotionL
         spaceShip = new Sprite();
         spaceShip.setAncho(WIDTH_SPACESHIP);
         spaceShip.setAlto(HEIGHT_SPACESHIP);
-        spaceShip.setPosX(this.getWidth());
-        spaceShip.setPosY(this.getHeight());
+        spaceShip.setPosX(gamePane.getWidth());
+        spaceShip.setPosY(gamePane.getHeight());
         spaceShip.setFileImage(new File(SPACE_SHIP_IMAGE));
         spaceShip.refreshBuffer();
-        spaceShip.setIdSprite(numSprites);
+        spaceShip.setIdSprite("spaceship");
         sprites.add(spaceShip);
+        numSprites++;
 
     }
+
     /**
      * Metodo encargado de anadir un contador de colisiones de sprites al panel de juego
      */
@@ -120,22 +129,26 @@ public class GameScreen extends JPanel implements Screen, Runnable, MouseMotionL
         this.timer.start();
     }
 
+    //GESTION DE LOS GRÁFICOS DEL JUEGO
 
-    //Pinta los componentes en pantalla
     @Override
-    protected void paintComponent(Graphics g) {
-        actualScreen.drawScreen(g);
-    }
-    @Override
-    public void drawScreen(Graphics g) {
+    public void drawScreen(Graphics g) throws InterruptedException {
         drawBackground(g);
         drawSprite(g);
         drawTimer(g);
+        manageGameFunctions();
     }
+
+    /**
+     * Metodo encargado de redimensionar la imagen de fondo según el tamaño de la ventana
+     *
+     * @param g
+     */
     @Override
     public void resizeScreen(Graphics g) {
-        backgroundImage = backgroundImage.getScaledInstance(this.getWidth(), this.getHeight(), 4);
+        backgroundImage = backgroundImage.getScaledInstance(gamePane.getWidth(), gamePane.getHeight(), 4);
     }
+
     /**
      * Metodo encargado de pintar el fondo del panel de juego
      *
@@ -152,6 +165,7 @@ public class GameScreen extends JPanel implements Screen, Runnable, MouseMotionL
         }
         g.drawImage(backgroundImage, 0, 0, null);
     }
+
     /**
      * Metodo encargado de pintar los sprites contenidos en la lista sprites.
      *
@@ -171,6 +185,7 @@ public class GameScreen extends JPanel implements Screen, Runnable, MouseMotionL
             );
         }
     }
+
     /**
      * Dibuja el contador de tiempo en el panel de juego
      *
@@ -184,25 +199,12 @@ public class GameScreen extends JPanel implements Screen, Runnable, MouseMotionL
     }
 
 
-    //Metodos de gestion del sistema de juego
-    @Override
-    public void run() {
-        while (true) {
-            try {
-                repaint();
-                manageGraphics();
-                Toolkit.getDefaultToolkit().sync();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+    //METODOS DE GESTIÓN DEL SISTEMA DE JUEGO.
     /**
      * Metodo encargado de gestionar el movimiento de los sprites y sus colisiones, además de calcular el
      * cooldown del laser
      */
-    public void manageGraphics() throws InterruptedException {
-        Thread.currentThread().sleep(15);
+    public void manageGameFunctions() throws InterruptedException {
         for (Sprite s : sprites) {
             moveSprites(s);
             checkWallsCollision(s);
@@ -212,7 +214,9 @@ public class GameScreen extends JPanel implements Screen, Runnable, MouseMotionL
             checkCoolDown();
         }
         destroyCollisionedSprites();
+        checkEndGame();
     }
+
     /**
      * Metodo encargado de actualizar la posicion de sus sprites acorde a su velocidad
      *
@@ -222,6 +226,7 @@ public class GameScreen extends JPanel implements Screen, Runnable, MouseMotionL
         s.setPosX(s.getPosX() + s.getVx());
         s.setPosY(s.getPosY() + s.getVy());
     }
+
     /**
      * Metodo encargado de comprobar las colisiones con las paredes de la ventana y cambiar la velocidad
      * en caso de que exista dicha colision
@@ -232,17 +237,18 @@ public class GameScreen extends JPanel implements Screen, Runnable, MouseMotionL
         if (sprite != laserShoot) {
             if (sprite.getPosX() <= 0) {
                 sprite.setVx(Math.abs(sprite.getVx()));
-            } else if (sprite.getPosX() >= this.getWidth() - sprite.getAncho()) {
+            } else if (sprite.getPosX() >= gamePane.getWidth() - sprite.getAncho()) {
                 sprite.setVx(Math.abs(sprite.getVx()) * -1);
             }
 
             if (sprite.getPosY() <= 0) {
                 sprite.setVy(Math.abs(sprite.getVy()));
-            } else if (sprite.getPosY() >= this.getHeight() - sprite.getAlto()) {
+            } else if (sprite.getPosY() >= gamePane.getHeight() - sprite.getAlto()) {
                 sprite.setVy(Math.abs(sprite.getVy()) * -1);
             }
         }
     }
+
     /**
      * Metodo encargado de comprobar si un asteroide colisiona con el disparo.
      * Si estos colisionan entre si, se marcara el atributo destroyed del asteroide a true.
@@ -256,11 +262,25 @@ public class GameScreen extends JPanel implements Screen, Runnable, MouseMotionL
                         s1.setDestroyed(true);
                         laserShoot.setDestroyed(true);
                         this.shootCooldown = false;
+
                     }
                 }
             }
+        }else{
+            for (Sprite s:sprites) {
+                if(s!=spaceShip && s!=laserShoot){
+                    if(s.squareCollider(spaceShip)){
+                        s.setDestroyed(true);
+                        spaceShip.setDestroyed(true);
+                        playersAlive = false;
+
+                    }
+                }
+
+            }
         }
     }
+
     /**
      * Metodo que comprueba si el disparo ha abandonado los limites de la ventana para marcar el
      * enfriamiento a false para que la nave pueda volver a disparar.
@@ -271,6 +291,7 @@ public class GameScreen extends JPanel implements Screen, Runnable, MouseMotionL
             this.shootCooldown = false;
         }
     }
+
     /**
      * Metodo encargado de crear una copia de la lista de sprites. En esta copia se eliminarán los sprites colisionados.
      * Posteriormente la lista original se actualizará con la información de la copia.
@@ -280,33 +301,51 @@ public class GameScreen extends JPanel implements Screen, Runnable, MouseMotionL
         for (Sprite s : sprites) {
             if (s.isDestroyed()) {
                 spritesAux.remove(s);
+                if (s.getIdSprite().equalsIgnoreCase("asteroid")){
+                    targetsDestroyed++;
+                    System.out.println("Objetivos destruidos: "+targetsDestroyed);
+                }
             }
         }
-        sprites = (ArrayList<Sprite>) spritesAux.clone();
+
+            sprites = (ArrayList<Sprite>) spritesAux.clone();
+    }
+
+    /**
+     * Metodo encargado de gestionar el final del juego, es decir, marcar en que situaciones
+     * se marcará como fin de juego o como fin del nivel
+     */
+    private void checkEndGame() {
+        if(targetsDestroyed == NUM_ASTEROID && playersAlive){
+            this.gamePane.setGameOver(false);
+            this.gamePane.setEndLevel(true);
+        }else if(!playersAlive){
+            this.gamePane.setGameOver(true);
+            this.gamePane.setEndLevel(true);
+        }
+    }
+
+    /**
+     * Metodo Get del objeto screen para trabajar desde GamePane
+     *
+     * @return Graphics g : componente graphics de la clase
+     */
+    @Override
+    public Graphics getGraphics() {
+        return super.getGraphics();
     }
 
 
     //EVENTOS DE RATON
 
-    /**
-     * Mover el ratón gestiona el movimiento de la nave
-     * Este metodo gestiona la posicion del objeto "spaceship" cambiandole su posición según
-     * los valores de x e y del evento del ratón
-     * @param e : evento del ratón
-     */
     @Override
-    public void mouseMoved(MouseEvent e) {
+    public void moveMouse(MouseEvent e) {
         spaceShip.setPosX(e.getX() - spaceShip.getAncho() / 2);
         spaceShip.setPosY(e.getY() - spaceShip.getAlto() / 2);
     }
 
-    /**
-     * Presionar el boton izquierdo del raton creará un nuevo sprite "laserShoot"
-     * Este metodo gestiona su instanciacion y le ajusta sus valores
-     * @param e : evento del ratón.
-     */
     @Override
-    public void mousePressed(MouseEvent e) {
+    public void clickMouse(MouseEvent e) {
         if (!shootCooldown) {
             laserShoot = new Sprite();
             laserShoot.setAncho(WIDTH_SHOOT);
@@ -315,44 +354,12 @@ public class GameScreen extends JPanel implements Screen, Runnable, MouseMotionL
             laserShoot.setPosY(e.getY() - spaceShip.getAlto() / 2);
             laserShoot.setVy(VELOCITY_SHOOT);
             laserShoot.setFileImage(new File(LASER_IMAGE));
+            laserShoot.setIdSprite("lasershoot");
             laserShoot.refreshBuffer();
             this.shootCooldown = true;
             sprites.add(laserShoot);
         }
     }
 
-    @Override
-    public void moveMouse(MouseEvent e) {
 
-    }
-
-    @Override
-    public void clickMouse(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseClicked(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseDragged(MouseEvent e) {
-
-    }
 }

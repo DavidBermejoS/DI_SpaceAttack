@@ -13,18 +13,19 @@ import java.util.Random;
 /**
  * @author David Bermejo Simon
  **/
-public class StartScreen extends JPanel implements Screen{
+public class GameOverScreen extends JPanel implements Screen{
 
 
-    private static final String BACKGROUND_WELCOME = "resources/images/backgroundWelcome.jpg";
+    private static final String BACKGROUND_GAMEOVER = "resources/images/gameOver.png";
+    Color fontsColor = new Color(255,255,255,50);
     private static final int INTERLINE_SPACE = 30;
 
-    GamePane gamePane;
     //    //PARAMETROS DE CONTROL
+    GamePane gamePane;
     Image backgroundImage;
 
 
-    public StartScreen(GamePane gamePane) {
+    public GameOverScreen(GamePane gamePane) {
         this.gamePane = gamePane;
     }
 
@@ -48,8 +49,7 @@ public class StartScreen extends JPanel implements Screen{
     }
 
     public void manageGameFunctions() throws InterruptedException {
-        //en este caso lo unico que gestiona el manageGameFunctions es la tasa de refresco
-        Thread.currentThread().sleep(100);
+        //no hace nada
     }
 
     /**
@@ -59,7 +59,7 @@ public class StartScreen extends JPanel implements Screen{
      */
     private void drawBackground(Graphics g) {
         File bckg;
-        bckg = new File(BACKGROUND_WELCOME);
+        bckg = new File(BACKGROUND_GAMEOVER);
         try {
             backgroundImage = ImageIO.read(bckg);
             backgroundImage = backgroundImage.getScaledInstance(gamePane.getWidth(), gamePane.getHeight(), 4);
@@ -75,17 +75,9 @@ public class StartScreen extends JPanel implements Screen{
      * Metodo encargado de gestionar la animacion de la pantalla principal
      */
     private void drawAnimationScreen(Graphics g) {
-        Random r = new Random();
-        int red = 0;
-        int green = 0;
-        int blue = 0;
-        red = r.nextInt(256);
-        green = r.nextInt(256);
-        blue = r.nextInt(256);
-        g.setFont(new Font("MonoSpace", Font.BOLD, 24));
-        g.setColor(new Color(red, green, blue));
-        g.drawString("Space Attack!", gamePane.getWidth() / 2, gamePane.getHeight() / 2);
-        g.drawString("Haz click para comenzar", gamePane.getWidth() / 2, gamePane.getHeight() / 2 + INTERLINE_SPACE);
+        g.setFont(new Font("MonoSpace", Font.BOLD, 32));
+        g.setColor(fontsColor);
+        g.drawString("HAZ CLICK PARA VOLVER AL INICIO", gamePane.getWidth() / 4,gamePane.getHeight() /4);
         g.dispose();
     }
     @Override
@@ -107,6 +99,9 @@ public class StartScreen extends JPanel implements Screen{
     @Override
     public void clickMouse(MouseEvent e) {
         gamePane.setEndLevel(true);
+        gamePane.setGameOver(false);
+        gamePane.setActualLevel(-1);
+
     }
 
 }

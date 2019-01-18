@@ -13,7 +13,7 @@ public class Window {
 
     public Window() {
         frame = new JFrame("Actividad 1 UT9");
-        frame.setBounds(800, 400, 800, 600);
+        frame.setBounds(400, 400, 1200, 850);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
