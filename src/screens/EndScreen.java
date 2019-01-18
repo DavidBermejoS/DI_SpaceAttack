@@ -44,7 +44,7 @@ public class EndScreen implements Screen {
     }
 
     @Override
-    public void manageGraphics() throws InterruptedException {
+    public void manageGameFunctions() throws InterruptedException {
 
     }
 }

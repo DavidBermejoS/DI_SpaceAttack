@@ -22,5 +22,5 @@ public interface Screen {
 
     public Graphics getGraphics();
 
-    public void manageGraphics() throws InterruptedException;
+    public void manageGameFunctions() throws InterruptedException;
 }

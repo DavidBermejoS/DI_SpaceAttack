@@ -25,7 +25,7 @@ public class Sprite {
     private int vx;
     private int vy;
 
-    private int idSprite;
+    private String idSprite;
 
     private boolean destroyed;
 
@@ -138,7 +138,7 @@ public class Sprite {
         this.vy = vy;
     }
 
-    public int getIdSprite() {
+    public String getIdSprite() {
         return idSprite;
     }
 
@@ -150,7 +150,7 @@ public class Sprite {
         this.destroyed = destroyed;
     }
 
-    public void setIdSprite(int idSprite) {
+    public void setIdSprite(String idSprite) {
         this.idSprite = idSprite;
     }
 
