@@ -227,13 +227,13 @@ public class GameScreen extends JPanel implements Screen{
         if (sprite != laserShoot) {
             if (sprite.getPosX() <= 0) {
                 sprite.setVx(Math.abs(sprite.getVx()));
-            } else if (sprite.getPosX() >= this.getWidth() - sprite.getAncho()) {
+            } else if (sprite.getPosX() >= gamePane.getWidth() - sprite.getAncho()) {
                 sprite.setVx(Math.abs(sprite.getVx()) * -1);
             }
 
             if (sprite.getPosY() <= 0) {
                 sprite.setVy(Math.abs(sprite.getVy()));
-            } else if (sprite.getPosY() >= this.getHeight() - sprite.getAlto()) {
+            } else if (sprite.getPosY() >= gamePane.getHeight() - sprite.getAlto()) {
                 sprite.setVy(Math.abs(sprite.getVy()) * -1);
             }
         }
