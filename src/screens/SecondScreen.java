@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
@@ -28,8 +29,8 @@ public class SecondScreen extends JPanel implements Screen {
     private static final int WIDTH_ASTEROID = 60;
     private static final int HEIGHT_ASTEROID = 60;
 
-    private static final int WIDTH_SPACESHIP = 30;
-    private static final int HEIGHT_SPACESHIP = 40;
+    private static final int WIDTH_SPACESHIP = 50;
+    private static final int HEIGHT_SPACESHIP = 70;
 
 
     private static final String ASTEROID_IMAGE = "resources/images/asteroide.png";
@@ -335,6 +336,11 @@ public class SecondScreen extends JPanel implements Screen {
     @Override
     public Graphics getGraphics() {
         return super.getGraphics();
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        //no hace nada
     }
 
 

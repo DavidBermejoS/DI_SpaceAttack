@@ -1,6 +1,7 @@
 package screens;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 /**
@@ -21,6 +22,8 @@ public interface Screen {
     public void resizeScreen(Graphics g);
 
     public Graphics getGraphics();
+
+    public void keyPressed(KeyEvent e);
 
     public void manageGameFunctions() throws InterruptedException;
 }

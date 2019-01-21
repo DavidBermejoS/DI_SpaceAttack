@@ -26,8 +26,8 @@ public class FirstScreen extends JPanel implements Screen {
     private static final int WIDTH_ASTEROID = 40;
     private static final int HEIGHT_ASTEROID = 40;
 
-    private static final int WIDTH_SPACESHIP = 30;
-    private static final int HEIGHT_SPACESHIP = 40;
+    private static final int WIDTH_SPACESHIP = 50;
+    private static final int HEIGHT_SPACESHIP = 70;
 
 
     private static final String ASTEROID_IMAGE = "resources/images/asteroide.png";
@@ -333,6 +333,11 @@ public class FirstScreen extends JPanel implements Screen {
     @Override
     public Graphics getGraphics() {
         return super.getGraphics();
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        //no hace nada
     }
 
 

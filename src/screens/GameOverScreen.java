@@ -5,6 +5,7 @@ import spaceAttack.GamePane;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
@@ -88,6 +89,11 @@ public class GameOverScreen extends JPanel implements Screen{
     @Override
     public Graphics getGraphics() {
         return null;
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        //no hace nada
     }
 
 
