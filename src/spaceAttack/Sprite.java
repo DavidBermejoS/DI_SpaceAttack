@@ -86,10 +86,6 @@ public class Sprite {
         return color;
     }
 
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
     public int getAncho() {
         return ancho;
     }
@@ -152,10 +148,6 @@ public class Sprite {
 
     public void setIdSprite(String idSprite) {
         this.idSprite = idSprite;
-    }
-
-    public File getFileImage() {
-        return fileImage;
     }
 
     public void setFileImage(File fileImage) {
@@ -259,6 +251,8 @@ public class Sprite {
 //        }
 //        return result;
 //    }
+
+
 
     /**
      * Metodo encargado de cambiar la velocidad en el vector contrario.
