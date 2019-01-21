@@ -37,11 +37,8 @@ public class SecondScreen extends JPanel implements Screen {
     private static final String LASER_IMAGE = "resources/images/laser.png";
     private static final String BACKGROUND_GAME = "resources/images/background.jpg";
 
-    private int numSprites;
     private double timeCount;
     private boolean shootCooldown;
-
-    private int totalDestroyed;
 
     ArrayList<Sprite> sprites;
     Sprite spaceShip;
@@ -65,7 +62,6 @@ public class SecondScreen extends JPanel implements Screen {
     //INSTANCIACION DE PARAMETROS DE LA PARTIDA E INICIO
     @Override
     public void startFrame() {
-        this.numSprites = 0;
         this.targetsDestroyed = 0;
         this.playersAlive = true;
         sprites = new ArrayList<>();
@@ -100,7 +96,6 @@ public class SecondScreen extends JPanel implements Screen {
             sprite.setIdSprite("asteroid");
             sprites.add(sprite);
         }
-        numSprites++;
     }
 
     /**
@@ -116,7 +111,6 @@ public class SecondScreen extends JPanel implements Screen {
         spaceShip.refreshBuffer();
         spaceShip.setIdSprite("spaceship");
         sprites.add(spaceShip);
-        numSprites++;
 
     }
 
