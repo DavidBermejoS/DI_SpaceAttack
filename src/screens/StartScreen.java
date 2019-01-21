@@ -5,9 +5,7 @@ import spaceAttack.GamePane;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Random;
@@ -15,19 +13,13 @@ import java.util.Random;
 /**
  * @author David Bermejo Simon
  **/
-public class StartScreen extends JPanel implements Screen, ActionListener {
+public class StartScreen extends JPanel implements Screen {
 
 
     private static final String BACKGROUND_WELCOME = "resources/images/backgroundWelcome.jpg";
     private static final int INTERLINE_SPACE = 30;
 
     GamePane gamePane;
-//    JButton selectionTieFighter;
-//    JButton selectionXWing;
-//    JButton selectionStandardShip;
-
-    JButton[] buttons;
-
     //    //PARAMETROS DE CONTROL
     Image backgroundImage;
 
@@ -40,29 +32,9 @@ public class StartScreen extends JPanel implements Screen, ActionListener {
 
     @Override
     public void startFrame() {
-        this.setLayout(new GridBagLayout());
-        GridBagConstraints settings = new GridBagConstraints();
-
-//        selectionStandardShip = new JButton("Standard Ship");
-//        selectionTieFighter = new JButton("Tie-Fighter");
-//        selectionXWing = new JButton("X-Wing");
-//
-//        buttons = new JButton[3];
-//
-//        this.buttons[0] = selectionStandardShip;
-//        this.buttons[1] = selectionTieFighter;
-//        this.buttons[2] = selectionXWing;
-//
-//        for (int i = 0; i < buttons.length; i++) {
-//            buttons[i].addActionListener(this);
-//            settings = new GridBagConstraints();
-//            settings.gridx = 0;
-//            settings.gridy = i;
-//            settings.anchor = GridBagConstraints.WEST;
-//            this.add(buttons[i], settings);
-//        }
-
+        this.setFocusable(true);
     }
+
 
     @Override
     public void startScreen() {
@@ -114,8 +86,22 @@ public class StartScreen extends JPanel implements Screen, ActionListener {
         blue = r.nextInt(256);
         g.setFont(new Font("MonoSpace", Font.BOLD, 24));
         g.setColor(new Color(red, green, blue));
-        g.drawString("Space Attack!", gamePane.getWidth() / 2, gamePane.getHeight() / 2);
-        g.drawString("Haz click para comenzar", gamePane.getWidth() / 2, gamePane.getHeight() / 2 + INTERLINE_SPACE);
+        g.drawString("Space Attack!", gamePane.getWidth() / 3, gamePane.getHeight() / 2);
+        g.drawString("Pulsa alguno de los botones para elegir nave y comenzar",
+                gamePane.getWidth() / 3,
+                gamePane.getHeight() / 2 + INTERLINE_SPACE*2);
+
+        g.drawString("1 - Caza Estelar Jedi",
+                gamePane.getWidth() / 3,
+                gamePane.getHeight() / 2 + INTERLINE_SPACE*3);
+
+        g.drawString("2 - Ala X",
+                gamePane.getWidth() / 3,
+                gamePane.getHeight() / 2 + INTERLINE_SPACE*4);
+
+        g.drawString("3 - Caza Tie",
+                gamePane.getWidth() / 3,
+                gamePane.getHeight() / 2 + INTERLINE_SPACE*5);
         g.dispose();
     }
 
@@ -140,24 +126,32 @@ public class StartScreen extends JPanel implements Screen, ActionListener {
 
     @Override
     public void clickMouse(MouseEvent e) {
-        gamePane.setEndLevel(true);
+        // no hace nada
     }
 
+    /**
+     * Metodo para selección de nave en pantalla principal
+     * @param e
+     */
+    public void keyPressed(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_F1) {
+                JOptionPane.showMessageDialog(gamePane, "Has elegido el Caza Jedi");
+                gamePane.setEndLevel(true);
+                gamePane.setGameOver(false);
+                gamePane.setSpaceShipOption(0);
 
-    //GESTION DE LOGICA DE LOS BOTONES DE SELECCION DE NAVE
-    @Override
-    public void actionPerformed(ActionEvent e) {
-//        for (JButton button : buttons) {
-//            if (e.getSource() == selectionStandardShip) {
-//                gamePane.setSpaceShipOption(0);
-//            }
-//            if (e.getSource() == selectionXWing) {
-//                gamePane.setSpaceShipOption(1);
-//            }
-//            if (e.getSource() == selectionTieFighter) {
-//                gamePane.setSpaceShipOption(2);
-//            }
-//        }
-
-    }
+            }
+            if (e.getKeyCode() == KeyEvent.VK_F2) {
+                JOptionPane.showMessageDialog(gamePane, "Has elegido el Ala X");
+                gamePane.setEndLevel(true);
+                gamePane.setGameOver(false);
+                gamePane.setSpaceShipOption(1);
+            }
+            if (e.getKeyCode() == KeyEvent.VK_F3) {
+                JOptionPane.showMessageDialog(gamePane, "Has elegido el Caza Tie");
+                gamePane.setEndLevel(true);
+                gamePane.setGameOver(false);
+                gamePane.setSpaceShipOption(2);
+            }
+        }
 }

@@ -5,6 +5,7 @@ import spaceAttack.GamePane;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
@@ -12,11 +13,11 @@ import java.io.IOException;
 /**
  * @author David Bermejo Simon
  **/
-public class VictoryScreen extends JPanel implements Screen{
+public class VictoryScreen extends JPanel implements Screen {
 
 
     private static final String BACKGROUND_VICTORY = "resources/images/backgroundVictory.jpg";
-    Color fontsColor = new Color(255,255,255,50);
+    Color fontsColor = new Color(255, 200, 255);
     private static final int INTERLINE_SPACE = 30;
 
     //    //PARAMETROS DE CONTROL
@@ -27,7 +28,6 @@ public class VictoryScreen extends JPanel implements Screen{
     public VictoryScreen(GamePane gamePane) {
         this.gamePane = gamePane;
     }
-
 
 
     @Override
@@ -76,9 +76,10 @@ public class VictoryScreen extends JPanel implements Screen{
     private void drawAnimationScreen(Graphics g) {
         g.setFont(new Font("MonoSpace", Font.BOLD, 32));
         g.setColor(fontsColor);
-        g.drawString("HAZ CLICK PARA VOLVER AL INICIO", gamePane.getWidth() / 4,gamePane.getHeight() /4);
+        g.drawString("¡¡¡VICTORIA!!!", gamePane.getWidth() / 2, gamePane.getHeight() / 4);
         g.dispose();
     }
+
     @Override
     public void resizeScreen(Graphics g) {
         backgroundImage = backgroundImage.getScaledInstance(gamePane.getWidth(), gamePane.getHeight(), 4);
@@ -87,6 +88,11 @@ public class VictoryScreen extends JPanel implements Screen{
     @Override
     public Graphics getGraphics() {
         return null;
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        //no hace nada
     }
 
 

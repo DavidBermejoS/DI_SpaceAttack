@@ -13,9 +13,9 @@ import java.awt.event.*;
  *
  * @author David Bermejo Simon
  **/
-public class GamePane extends JPanel implements Runnable, MouseMotionListener, MouseListener {
+public class GamePane extends JPanel implements Runnable, MouseMotionListener, MouseListener, KeyListener {
 
-    final static String [] HANGAR = {"resources/images/nave.png","resources/images/xWing.png"  ,"resources/images/tieFighter.png" };
+    final static String [] HANGAR = {"resources/hangar/jediFighterGreen.png","resources/hangar/xWing.png", "resources/hangar/tieFighter.png"};
 
     int shipSelected;
 
@@ -34,9 +34,10 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
         shipSelected = 0;
         this.endLevel = true;
         this.gameOver = false;
-//        this.screen = new StartScreen(this);
+        this.setFocusable(true);
         this.addMouseMotionListener(this);
         this.addMouseListener(this);
+        this.addKeyListener(this);
         new Thread(this).start();
     }
 
@@ -73,23 +74,22 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
     private void checkLevel() {
         if (endLevel && !gameOver) {
             actualLevel++;
-            endLevel = false;
             switch (actualLevel) {
                 case 0:
-                    this.actualLevel = 0;
                     this.screen = new StartScreen(this);
+                    endLevel = false;
                     break;
                 case 1:
-                    this.actualLevel=1;
                     this.screen = new FirstScreen(this,HANGAR[shipSelected]);
+                    endLevel = false;
                     break;
                 case 2:
-                    this.actualLevel=2;
                     this.screen = new SecondScreen(this,HANGAR[shipSelected]);
+                    endLevel = false;
                     break;
                 case 3:
-                    this.actualLevel = 3;
                     this.screen = new VictoryScreen(this);
+                    endLevel = false;
                     break;
             }
 
@@ -102,25 +102,13 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
     }
 
 
-    //METODOS GET Y SET DE VARIABLES DE CONTROL
-    public boolean isEndLevel() {
-        return endLevel;
-    }
-
+    //METODOS SET DE VARIABLES DE CONTROL
     public void setEndLevel(boolean endLevel) {
         this.endLevel = endLevel;
     }
 
-    public boolean isGameOver() {
-        return gameOver;
-    }
-
     public void setGameOver(boolean gameOver) {
         this.gameOver = gameOver;
-    }
-
-    public int getActualLevel() {
-        return actualLevel;
     }
 
     public void setActualLevel(int actualLevel) {
@@ -173,5 +161,19 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
     }
 
 
+    @Override
+    public void keyTyped(KeyEvent keyEvent) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent keyEvent) {
+        this.screen.keyPressed(keyEvent);
+    }
+
+    @Override
+    public void keyReleased(KeyEvent keyEvent) {
+
+    }
 }
 
