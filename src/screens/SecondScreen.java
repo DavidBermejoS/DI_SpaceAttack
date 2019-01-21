@@ -25,7 +25,7 @@ public class SecondScreen extends JPanel implements Screen {
     private static final int HEIGHT_SHOOT = 40;
     private static final int VELOCITY_SHOOT = -30;
 
-    private  static  final  int NUM_ASTEROID = 10;
+    private  static  final  int NUM_ASTEROID = 15;
     private static final int WIDTH_ASTEROID = 60;
     private static final int HEIGHT_ASTEROID = 60;
 
@@ -91,8 +91,8 @@ public class SecondScreen extends JPanel implements Screen {
             sprite.setPosY(0);
             sprite.setAncho(WIDTH_ASTEROID);
             sprite.setAlto(HEIGHT_ASTEROID);
-            sprite.setVx(rd.nextInt(6) + 1);
-            sprite.setVy(rd.nextInt(6) + 1);
+            sprite.setVx(rd.nextInt(10) + 1);
+            sprite.setVy(rd.nextInt(10) + 1);
             sprite.setFileImage(new File(ASTEROID_IMAGE));
             sprite.refreshBuffer();
             sprite.setIdSprite("asteroid");
@@ -198,6 +198,8 @@ public class SecondScreen extends JPanel implements Screen {
         g.drawString(String.valueOf(new DecimalFormat("#.##").format(timeCount)),
                 this.getWidth() - 30,
                 this.getHeight() - 20);
+        g.dispose();
+
     }
 
 

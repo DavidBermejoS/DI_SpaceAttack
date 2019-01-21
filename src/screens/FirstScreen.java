@@ -22,7 +22,7 @@ public class FirstScreen extends JPanel implements Screen {
     private static final int HEIGHT_SHOOT = 40;
     private static final int VELOCITY_SHOOT = -30;
 
-    private  static  final  int NUM_ASTEROID = 3;
+    private  static  final  int NUM_ASTEROID = 8;
     private static final int WIDTH_ASTEROID = 40;
     private static final int HEIGHT_ASTEROID = 40;
 
@@ -195,6 +195,7 @@ public class FirstScreen extends JPanel implements Screen {
         g.drawString(String.valueOf(new DecimalFormat("#.##").format(timeCount)),
                 this.getWidth() - 30,
                 this.getHeight() - 20);
+        g.dispose();
     }
 
 
