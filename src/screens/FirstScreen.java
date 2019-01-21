@@ -343,6 +343,8 @@ public class FirstScreen extends JPanel implements Screen {
         }
     }
 
+
+    //METODO GET DEL GRAPHICS DE LA PANTALLA
     /**
      * Metodo Get del objeto screen para trabajar desde GamePane
      *
@@ -353,14 +355,9 @@ public class FirstScreen extends JPanel implements Screen {
         return super.getGraphics();
     }
 
-    @Override
-    public void keyPressed(KeyEvent e) {
-        //no hace nada
-    }
 
 
     //EVENTOS DE RATON
-
     @Override
     public void moveMouse(MouseEvent e) {
         spaceShip.setPosX(e.getX() - spaceShip.getAncho() / 2);
@@ -384,5 +381,10 @@ public class FirstScreen extends JPanel implements Screen {
         }
     }
 
+    //EVENTOS DE TECLADO
+    @Override
+    public void keyPressed(KeyEvent e) {
+        //no hace nada
+    }
 
 }

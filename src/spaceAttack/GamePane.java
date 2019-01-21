@@ -54,6 +54,7 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
         }
     }
 
+    //GESTION DEL HILO
     @Override
     public void run() {
         while (true) {
@@ -172,7 +173,7 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
         //no hace nada
     }
 
-
+    //EVENTOS DE TECLADO
     @Override
     public void keyTyped(KeyEvent keyEvent) {
 
