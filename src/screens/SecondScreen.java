@@ -25,7 +25,7 @@ public class SecondScreen extends JPanel implements Screen {
     private static final int HEIGHT_SHOOT = 40;
     private static final int VELOCITY_SHOOT = -30;
 
-    private  static  final  int NUM_ASTEROID = 10;
+    private  static  final  int NUM_ASTEROID = 15;
     private static final int WIDTH_ASTEROID = 60;
     private static final int HEIGHT_ASTEROID = 60;
 
@@ -40,6 +40,8 @@ public class SecondScreen extends JPanel implements Screen {
     private int numSprites;
     private double timeCount;
     private boolean shootCooldown;
+
+    private int totalDestroyed;
 
     ArrayList<Sprite> sprites;
     Sprite spaceShip;
@@ -91,8 +93,8 @@ public class SecondScreen extends JPanel implements Screen {
             sprite.setPosY(0);
             sprite.setAncho(WIDTH_ASTEROID);
             sprite.setAlto(HEIGHT_ASTEROID);
-            sprite.setVx(rd.nextInt(6) + 1);
-            sprite.setVy(rd.nextInt(6) + 1);
+            sprite.setVx(rd.nextInt(10) +10);
+            sprite.setVy(rd.nextInt(10) + 10);
             sprite.setFileImage(new File(ASTEROID_IMAGE));
             sprite.refreshBuffer();
             sprite.setIdSprite("asteroid");
@@ -138,6 +140,7 @@ public class SecondScreen extends JPanel implements Screen {
         drawBackground(g);
         drawSprite(g);
         drawTimer(g);
+        drawCounter(g);
         manageGameFunctions();
     }
 
@@ -195,10 +198,27 @@ public class SecondScreen extends JPanel implements Screen {
      */
     private void drawTimer(Graphics g) {
         g.setColor(Color.RED);
+        g.setFont(new Font("MonoSpace",Font.BOLD,32));
         g.drawString(String.valueOf(new DecimalFormat("#.##").format(timeCount)),
-                this.getWidth() - 30,
-                this.getHeight() - 20);
+                gamePane.getWidth() - 70,
+                gamePane.getHeight() - 40);
+        g.dispose();
+
     }
+
+    /**
+     * Metodo encargado de pintar el contador de sprites destruidos
+     * @param g
+     */
+    private void drawCounter(Graphics g) {
+        g.setColor(Color.GREEN);
+        g.setFont(new Font("MonoSpace",Font.BOLD,32));
+        g.drawString(Integer.toString(targetsDestroyed),
+                50,
+                70);
+
+    }
+
 
 
     //METODOS DE GESTIÓN DEL SISTEMA DE JUEGO.
@@ -321,6 +341,8 @@ public class SecondScreen extends JPanel implements Screen {
         if((targetsDestroyed == NUM_ASTEROID) && playersAlive){
             this.gamePane.setGameOver(false);
             this.gamePane.setEndLevel(true);
+            gamePane.setActualScore(timeCount);
+
 
         }else if(!playersAlive){
             this.gamePane.setGameOver(true);
@@ -328,6 +350,8 @@ public class SecondScreen extends JPanel implements Screen {
         }
     }
 
+
+    //METODO GET DE LOS GRAFICOS DE LA PANTALLA
     /**
      * Metodo Get del objeto screen para trabajar desde GamePane
      *
@@ -338,14 +362,9 @@ public class SecondScreen extends JPanel implements Screen {
         return super.getGraphics();
     }
 
-    @Override
-    public void keyPressed(KeyEvent e) {
-        //no hace nada
-    }
 
 
     //EVENTOS DE RATON
-
     @Override
     public void moveMouse(MouseEvent e) {
         spaceShip.setPosX(e.getX() - spaceShip.getAncho() / 2);
@@ -369,5 +388,10 @@ public class SecondScreen extends JPanel implements Screen {
         }
     }
 
+    //EVENTOS DEL TECLADO
+    @Override
+    public void keyPressed(KeyEvent e) {
+        //no hace nada
+    }
 
 }

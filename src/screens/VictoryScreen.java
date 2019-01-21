@@ -29,7 +29,7 @@ public class VictoryScreen extends JPanel implements Screen {
         this.gamePane = gamePane;
     }
 
-
+    //METODOS DE GESTION DE LOS GRÁFICOS DEL NIVEL
     @Override
     public void startFrame() {
         //
@@ -45,10 +45,6 @@ public class VictoryScreen extends JPanel implements Screen {
         drawBackground(g);
         drawAnimationScreen(g);
         manageGameFunctions();
-    }
-
-    public void manageGameFunctions() throws InterruptedException {
-        //no hace nada
     }
 
     /**
@@ -69,7 +65,6 @@ public class VictoryScreen extends JPanel implements Screen {
         g.drawImage(backgroundImage, 0, 0, null);
     }
 
-
     /**
      * Metodo encargado de gestionar la animacion de la pantalla principal
      */
@@ -77,6 +72,8 @@ public class VictoryScreen extends JPanel implements Screen {
         g.setFont(new Font("MonoSpace", Font.BOLD, 32));
         g.setColor(fontsColor);
         g.drawString("¡¡¡VICTORIA!!!", gamePane.getWidth() / 2, gamePane.getHeight() / 4);
+        g.drawString("Tiempo Obtenido: "+gamePane.getActualScore(), gamePane.getWidth() / 2, gamePane.getHeight() / 4+30);
+
         g.dispose();
     }
 
@@ -90,12 +87,14 @@ public class VictoryScreen extends JPanel implements Screen {
         return null;
     }
 
-    @Override
-    public void keyPressed(KeyEvent e) {
+
+    //METODOS DE GESTION DEL SISTEMA DEL JUEGO
+    public void manageGameFunctions() throws InterruptedException {
         //no hace nada
     }
 
 
+    //EVENTOS DEL RATON
     @Override
     public void moveMouse(MouseEvent e) {
 
@@ -108,5 +107,13 @@ public class VictoryScreen extends JPanel implements Screen {
         gamePane.setActualLevel(-1);
 
     }
+
+    //EVENTOS DEL TECLADO
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        //no hace nada
+    }
+
 
 }
