@@ -23,15 +23,16 @@ public class SecondScreen extends JPanel implements Screen {
     private static final int WIDTH_SHOOT = 20;
     private static final int HEIGHT_SHOOT = 40;
     private static final int VELOCITY_SHOOT = -30;
-    private static final int WIDTH_ASTEROID = 50;
-    private static final int HEIGHT_ASTEROID = 50;
-    private  static  final  int NUM_ASTEROID = 8;
+
+    private  static  final  int NUM_ASTEROID = 10;
+    private static final int WIDTH_ASTEROID = 60;
+    private static final int HEIGHT_ASTEROID = 60;
+
     private static final int WIDTH_SPACESHIP = 30;
     private static final int HEIGHT_SPACESHIP = 40;
 
 
     private static final String ASTEROID_IMAGE = "resources/images/asteroide.png";
-    private static final String SPACE_SHIP_IMAGE = "resources/images/nave.png";
     private static final String LASER_IMAGE = "resources/images/laser.png";
     private static final String BACKGROUND_GAME = "resources/images/background.jpg";
 
@@ -47,11 +48,12 @@ public class SecondScreen extends JPanel implements Screen {
 
     Screen actualScreen;
     GamePane gamePane;
+    String spaceShipImageRoute;
     int targetsDestroyed;
     boolean playersAlive;
-    boolean gameOver;
 
-    public SecondScreen(GamePane gamePane) {
+    public SecondScreen(GamePane gamePane, String SpaceShip_Image) {
+        this.spaceShipImageRoute = SpaceShip_Image;
         actualScreen = this;
         this.gamePane = gamePane;
         startFrame();
@@ -63,7 +65,6 @@ public class SecondScreen extends JPanel implements Screen {
         this.numSprites = 0;
         this.targetsDestroyed = 0;
         this.playersAlive = true;
-        this.gameOver = false;
         sprites = new ArrayList<>();
         startScreen();
 
@@ -108,7 +109,7 @@ public class SecondScreen extends JPanel implements Screen {
         spaceShip.setAlto(HEIGHT_SPACESHIP);
         spaceShip.setPosX(gamePane.getWidth());
         spaceShip.setPosY(gamePane.getHeight());
-        spaceShip.setFileImage(new File(SPACE_SHIP_IMAGE));
+        spaceShip.setFileImage(new File(spaceShipImageRoute));
         spaceShip.refreshBuffer();
         spaceShip.setIdSprite("spaceship");
         sprites.add(spaceShip);
@@ -316,9 +317,10 @@ public class SecondScreen extends JPanel implements Screen {
      * se marcará como fin de juego o como fin del nivel
      */
     private void checkEndGame() {
-        if(targetsDestroyed == NUM_ASTEROID && playersAlive){
+        if((targetsDestroyed == NUM_ASTEROID) && playersAlive){
             this.gamePane.setGameOver(false);
             this.gamePane.setEndLevel(true);
+
         }else if(!playersAlive){
             this.gamePane.setGameOver(true);
             this.gamePane.setEndLevel(true);

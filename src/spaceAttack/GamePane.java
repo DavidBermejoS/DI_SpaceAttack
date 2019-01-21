@@ -15,16 +15,23 @@ import java.awt.event.*;
  **/
 public class GamePane extends JPanel implements Runnable, MouseMotionListener, MouseListener {
 
+    final static String [] HANGAR = {"resources/images/nave.png","resources/images/xWing.png"  ,"resources/images/tieFighter.png" };
+
+    int shipSelected;
+
     public boolean endLevel;
     private int actualLevel;
     public Screen screen;
     private boolean gameOver;
+
+
 
     /**
      * CONSTRUCTOR DE LA CLASE
      */
     public GamePane() {
         actualLevel = -1;
+        shipSelected = 0;
         this.endLevel = true;
         this.gameOver = false;
 //        this.screen = new StartScreen(this);
@@ -66,23 +73,24 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
     private void checkLevel() {
         if (endLevel && !gameOver) {
             actualLevel++;
+            endLevel = false;
             switch (actualLevel) {
                 case 0:
-                    endLevel = false;
+                    this.actualLevel = 0;
                     this.screen = new StartScreen(this);
                     break;
                 case 1:
-                    endLevel = false;
-                    this.screen = new FirstScreen(this);
+                    this.actualLevel=1;
+                    this.screen = new FirstScreen(this,HANGAR[shipSelected]);
                     break;
                 case 2:
-                    endLevel = false;
-                    this.screen = new SecondScreen(this);
+                    this.actualLevel=2;
+                    this.screen = new SecondScreen(this,HANGAR[shipSelected]);
                     break;
                 case 3:
-                    actualLevel=-1;
-                    endLevel = false;
-                    this.screen = new GameOverScreen(this);
+                    this.actualLevel = 3;
+                    this.screen = new VictoryScreen(this);
+                    break;
             }
 
         }else if(endLevel && gameOver){
@@ -117,6 +125,15 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
 
     public void setActualLevel(int actualLevel) {
         this.actualLevel = actualLevel;
+    }
+
+    /**
+     * Metodo para establecer desde la pantalla de inicio que nave querremos manejar
+     * durante el juego
+     * @param i
+     */
+    public void setSpaceShipOption(int i) {
+        shipSelected = i;
     }
 
     //EVENTOS DE RATON
@@ -154,5 +171,7 @@ public class GamePane extends JPanel implements Runnable, MouseMotionListener, M
     public void mouseExited(MouseEvent e) {
         //no hace nada
     }
+
+
 }
 

@@ -8,15 +8,14 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.Random;
 
 /**
  * @author David Bermejo Simon
  **/
-public class GameOverScreen extends JPanel implements Screen{
+public class VictoryScreen extends JPanel implements Screen{
 
 
-    private static final String BACKGROUND_GAMEOVER = "resources/images/gameOver.png";
+    private static final String BACKGROUND_VICTORY = "resources/images/backgroundVictory.jpg";
     Color fontsColor = new Color(255,255,255,50);
     private static final int INTERLINE_SPACE = 30;
 
@@ -25,7 +24,7 @@ public class GameOverScreen extends JPanel implements Screen{
     Image backgroundImage;
 
 
-    public GameOverScreen(GamePane gamePane) {
+    public VictoryScreen(GamePane gamePane) {
         this.gamePane = gamePane;
     }
 
@@ -59,7 +58,7 @@ public class GameOverScreen extends JPanel implements Screen{
      */
     private void drawBackground(Graphics g) {
         File bckg;
-        bckg = new File(BACKGROUND_GAMEOVER);
+        bckg = new File(BACKGROUND_VICTORY);
         try {
             backgroundImage = ImageIO.read(bckg);
             backgroundImage = backgroundImage.getScaledInstance(gamePane.getWidth(), gamePane.getHeight(), 4);
