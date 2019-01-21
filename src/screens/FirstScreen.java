@@ -49,6 +49,7 @@ public class FirstScreen extends JPanel implements Screen {
     String spaceShipImageRoute;
     int targetsDestroyed;
     boolean playersAlive;
+    private int totalDestroyed;
 
     public FirstScreen(GamePane gamePane, String SpaceShip_Image) {
         this.spaceShipImageRoute = SpaceShip_Image;
@@ -135,6 +136,7 @@ public class FirstScreen extends JPanel implements Screen {
         drawBackground(g);
         drawSprite(g);
         drawTimer(g);
+        drawCounter(g);
         manageGameFunctions();
     }
 
@@ -192,10 +194,24 @@ public class FirstScreen extends JPanel implements Screen {
      */
     private void drawTimer(Graphics g) {
         g.setColor(Color.RED);
+        g.setFont(new Font("MonoSpace",Font.BOLD,32));
         g.drawString(String.valueOf(new DecimalFormat("#.##").format(timeCount)),
-                this.getWidth() - 30,
-                this.getHeight() - 20);
-        g.dispose();
+                gamePane.getWidth() - 70,
+                gamePane.getHeight() - 40);
+
+    }
+
+    /**
+     * Metodo encargado de pintar el contador de sprites destruidos
+     * @param g
+     */
+    private void drawCounter(Graphics g) {
+        g.setColor(Color.GREEN);
+        g.setFont(new Font("MonoSpace",Font.BOLD,32));
+        g.drawString(Integer.toString(targetsDestroyed),
+                50,
+                70);
+
     }
 
 
@@ -319,6 +335,7 @@ public class FirstScreen extends JPanel implements Screen {
         if((targetsDestroyed == NUM_ASTEROID) && playersAlive){
             this.gamePane.setGameOver(false);
             this.gamePane.setEndLevel(true);
+            gamePane.setActualScore(timeCount);
 
         }else if(!playersAlive){
             this.gamePane.setGameOver(true);

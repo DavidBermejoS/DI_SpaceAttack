@@ -41,6 +41,8 @@ public class SecondScreen extends JPanel implements Screen {
     private double timeCount;
     private boolean shootCooldown;
 
+    private int totalDestroyed;
+
     ArrayList<Sprite> sprites;
     Sprite spaceShip;
     Sprite laserShoot;
@@ -91,8 +93,8 @@ public class SecondScreen extends JPanel implements Screen {
             sprite.setPosY(0);
             sprite.setAncho(WIDTH_ASTEROID);
             sprite.setAlto(HEIGHT_ASTEROID);
-            sprite.setVx(rd.nextInt(10) + 1);
-            sprite.setVy(rd.nextInt(10) + 1);
+            sprite.setVx(rd.nextInt(10) +10);
+            sprite.setVy(rd.nextInt(10) + 10);
             sprite.setFileImage(new File(ASTEROID_IMAGE));
             sprite.refreshBuffer();
             sprite.setIdSprite("asteroid");
@@ -138,6 +140,7 @@ public class SecondScreen extends JPanel implements Screen {
         drawBackground(g);
         drawSprite(g);
         drawTimer(g);
+        drawCounter(g);
         manageGameFunctions();
     }
 
@@ -195,12 +198,27 @@ public class SecondScreen extends JPanel implements Screen {
      */
     private void drawTimer(Graphics g) {
         g.setColor(Color.RED);
+        g.setFont(new Font("MonoSpace",Font.BOLD,32));
         g.drawString(String.valueOf(new DecimalFormat("#.##").format(timeCount)),
-                this.getWidth() - 30,
-                this.getHeight() - 20);
+                gamePane.getWidth() - 70,
+                gamePane.getHeight() - 40);
         g.dispose();
 
     }
+
+    /**
+     * Metodo encargado de pintar el contador de sprites destruidos
+     * @param g
+     */
+    private void drawCounter(Graphics g) {
+        g.setColor(Color.GREEN);
+        g.setFont(new Font("MonoSpace",Font.BOLD,32));
+        g.drawString(Integer.toString(targetsDestroyed),
+                50,
+                70);
+
+    }
+
 
 
     //METODOS DE GESTIÓN DEL SISTEMA DE JUEGO.
@@ -323,6 +341,8 @@ public class SecondScreen extends JPanel implements Screen {
         if((targetsDestroyed == NUM_ASTEROID) && playersAlive){
             this.gamePane.setGameOver(false);
             this.gamePane.setEndLevel(true);
+            gamePane.setActualScore(timeCount);
+
 
         }else if(!playersAlive){
             this.gamePane.setGameOver(true);

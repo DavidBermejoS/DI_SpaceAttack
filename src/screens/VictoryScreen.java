@@ -77,6 +77,8 @@ public class VictoryScreen extends JPanel implements Screen {
         g.setFont(new Font("MonoSpace", Font.BOLD, 32));
         g.setColor(fontsColor);
         g.drawString("¡¡¡VICTORIA!!!", gamePane.getWidth() / 2, gamePane.getHeight() / 4);
+        g.drawString("Tiempo Obtenido: "+gamePane.getActualScore(), gamePane.getWidth() / 2, gamePane.getHeight() / 4+30);
+
         g.dispose();
     }
 
